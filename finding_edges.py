@@ -1,3 +1,7 @@
+'''
+	Program to find edges in a given image
+'''
+
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
