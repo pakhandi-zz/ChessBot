@@ -4,6 +4,7 @@
 import numpy as np
 import cv2
 
+# 1 => to use secondary (USB) web camera
 cap = cv2.VideoCapture(1)
 
 while(True):
