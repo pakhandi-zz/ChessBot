@@ -1,3 +1,6 @@
+'''
+	Program to get live stream from secondary web cam and click a picture on press of a button
+'''
 import numpy as np
 import cv2
 
