@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 img = cv2.imread(sys.argv[1])
 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
-corners = cv2.goodFeaturesToTrack(gray,int(sys.argv[2]),0.01,10)	#top 300 points
+corners = cv2.goodFeaturesToTrack(gray,int(sys.argv[2]),0.01,10)
 corners = np.int0(corners)
 
 ls = []
