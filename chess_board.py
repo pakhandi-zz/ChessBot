@@ -16,6 +16,10 @@ RED   = (255,0,0)
 GREEN = (0,255,0)
 BLUE  = (0,0,255)
 
+FACTOR = 3
+
+INT_MAX = 1000000009
+
 #Function to get distance between two points in 2-D plane
 def get_dist((x1,y1), (x2,y2)):
 	return int(sqrt( (y2-y1)**2 + (x2-x1)**2 ))
@@ -35,19 +39,17 @@ for i in corners:
 	vertices.append((x,y))
 
 #Variables to store four corners of the board
-bottom_left_x = 10000
+bottom_left_x = INT_MAX
 bottom_left_y = 0
 
-top_left_x = 10000
-top_left_y = 10000
+top_left_x = INT_MAX
+top_left_y = INT_MAX
 
 bottom_right_x = 0
 bottom_right_y = 0
 
 top_right_x = 0
-top_right_y = 10000
-
-minnx = 10000007
+top_right_y = INT_MAX
 
 #Detecting the four corners of the board
 for point in vertices:
@@ -79,10 +81,10 @@ cv2.line(img, (bottom_right_x,bottom_right_y), (top_right_x,top_right_y), GREEN,
 top_line = []
 top_line.append( (top_left_x,top_left_y) )
 top_line_length = get_dist( (top_left_x, top_left_y) , (top_right_x,top_right_y))
-top_unit_length = top_line_length / 3
+top_unit_length = top_line_length / FACTOR
 
 
-for i in range(0,2):
+for i in range(0,FACTOR-1):
 	top_line.append( (top_left_x + ( top_unit_length * (i+1) ) , top_left_y ) )
 
 top_line.append( (top_right_x, top_right_y ) )
@@ -95,9 +97,9 @@ for point in top_line:
 bottom_line = []
 bottom_line.append( (bottom_left_x,bottom_left_y) )
 bottom_line_length = get_dist( (bottom_left_x,bottom_left_y) , (bottom_right_x, bottom_right_y))
-bottom_unit_length = bottom_line_length / 3
+bottom_unit_length = bottom_line_length / FACTOR
 
-for i in range(0,2):
+for i in range(0,FACTOR-1):
 	bottom_line.append( (bottom_left_x + ( bottom_unit_length * (i+1) ) , bottom_left_y ) )
 
 bottom_line.append( (bottom_right_x, bottom_right_y) )
@@ -110,9 +112,9 @@ for point in bottom_line:
 left_line = []
 left_line.append( (top_left_x,top_left_y) )
 left_line_length = get_dist( (top_left_x,top_left_y) , (bottom_left_x, bottom_left_y))
-left_unit_length = left_line_length / 3
+left_unit_length = left_line_length / FACTOR
 
-for i in range(0,2):
+for i in range(0,FACTOR-1):
 	left_line.append( (top_left_x , top_left_y + ( (i+1) * left_unit_length ) ) );
 
 left_line.append( (bottom_left_x, bottom_left_y) )
@@ -125,9 +127,9 @@ for point in left_line:
 right_line = []
 right_line.append( (top_right_x,top_right_y) )
 right_line_length = get_dist( (top_right_x,top_right_y) , (bottom_right_x, bottom_right_y))
-right_unit_length = right_line_length / 3
+right_unit_length = right_line_length / FACTOR
 
-for i in range(0,2):
+for i in range(0,FACTOR-1):
 	right_line.append( (top_right_x , top_right_y + ( (i+1) * right_unit_length ) ) );
 
 right_line.append( (bottom_right_x, bottom_right_y) )
@@ -141,10 +143,10 @@ for point in right_line:
 #Drawing the remaining edges of the board using the points detected on sides of board
 # --------------------------------------------------------------------------------
 
-for i in range(0,4):
+for i in range(0,FACTOR+1):
 	cv2.line(img, (top_line[i][0],top_line[i][1]) , (bottom_line[i][0],bottom_line[i][1]), RED , 1)
 
-for i in range(0,4):
+for i in range(0,FACTOR+1):
 	cv2.line(img, (left_line[i][0],left_line[i][1]) , (right_line[i][0],right_line[i][1]), RED , 1)
 
 # -------------------------------------------------------------------------------
@@ -162,17 +164,17 @@ for i in corners:
 	new_vertices.append((x,y))
 
 #Matrix to store coordinates of vertices on the board
-matrix = [[(0,0) for x in range(5)] for x in range(5)]
+matrix = [[(0,0) for x in range(FACTOR+2)] for x in range(FACTOR+2)]
 
 #Filling the matrix
 matrix[0][0] = (top_left_x,top_left_y)
 
-for i in range(0,4):
-	for j in range(0,4):
+for i in range(0,FACTOR+1):
+	for j in range(0,FACTOR+1):
 		predicted_x = matrix[i][j][0] + top_unit_length
 		predicetd_y = matrix[i][j][1] + left_unit_length
 
-		minn_dist = 1000000009
+		minn_dist = INT_MAX
 
 		for point in new_vertices:
 			this_dist = get_dist( point , (predicted_x,matrix[i][j][1])  )
@@ -180,7 +182,7 @@ for i in range(0,4):
 				matrix[i][j+1] = point
 				minn_dist = this_dist
 
-		minn_dist = 1000000009
+		minn_dist = INT_MAX
 
 		for point in new_vertices:
 			this_dist = get_dist( point , (matrix[i][j][0],predicetd_y)  )
