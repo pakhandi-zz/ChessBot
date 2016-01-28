@@ -10,6 +10,7 @@ import cv2
 import sys
 from matplotlib import pyplot as plt
 from math import *
+import shutil
 
 # Global Constants
 # ---------------------------------------------------------------------------
@@ -212,5 +213,12 @@ for i in range(0,FACTOR+1):
 for vertices in new_vertices:
 	print vertices[0]," ", vertices[1]
 	cv2.circle(img,(vertices[0],vertices[1]),5,GREEN,-1)
+
+for i in range(0,FACTOR):
+	for j in range(0,FACTOR):
+		cropped = img[matrix[i][j][1]:matrix[i+1][j+1][1] ,matrix[i][j][0]:matrix[i+1][j+1][0]]
+		filename = str(i)+str(j)+".jpg"
+		cv2.imwrite(filename,cropped)
+		shutil.move(filename,"temp/"+filename)
 
 plt.imshow(img),plt.show()
