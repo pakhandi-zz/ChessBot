@@ -17,8 +17,8 @@ GREEN = (0,255,0)
 BLUE  = (0,0,255)
 
 FACTOR = 3
-
 INT_MAX = 1000000009
+TOTAL_FINAL_VERTICES = 16
 
 #Function to get distance between two points in 2-D plane
 def get_dist((x1,y1), (x2,y2)):
@@ -154,7 +154,7 @@ for i in range(0,FACTOR+1):
 #Detecting vertices on the newly constructed board
 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
-corners = cv2.goodFeaturesToTrack(gray,int(16),0.01,10)
+corners = cv2.goodFeaturesToTrack(gray,int(TOTAL_FINAL_VERTICES),0.01,10)
 corners = np.int0(corners)
 
 new_vertices = []
