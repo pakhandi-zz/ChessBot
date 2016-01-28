@@ -19,10 +19,10 @@ RED   = (255,0,0)
 GREEN = (0,255,0)
 BLUE  = (0,0,255)
 
-FACTOR = 3
+FACTOR = 8
 INT_MAX = 1000000009
-TOTAL_FINAL_VERTICES = 16
-
+TOTAL_FINAL_VERTICES = 150
+OFFSET = 30
 # ---------------------------------------------------------------------------
 
 
@@ -44,6 +44,10 @@ vertices = []
 for i in corners:
 	x,y = i.ravel()
 	vertices.append((x,y))
+	cv2.circle(img,(x,y),5,255,-1)
+	print x," ",y
+print "^"*30
+plt.imshow(img),plt.show()
 
 # Variables to store four corners of the board
 bottom_left_x = INT_MAX
@@ -58,19 +62,40 @@ bottom_right_y = 0
 top_right_x = 0
 top_right_y = INT_MAX
 
+minny = INT_MAX
+maxxy = 0
+
 # Detecting the four corners of the board
 # ---------------------------------------------------------------------------
 
 for point in vertices:
-	if point[0] <= top_left_x and point[1] <= top_left_y:
-		top_left_x,top_left_y = point[0],point[1]
-	if point[0] <= bottom_left_x and point[1] >= bottom_left_y:
-		bottom_left_x,bottom_left_y = point[0],point[1]
-	if point[0] >= bottom_right_x and point[1] >= bottom_right_y:
-		bottom_right_x,bottom_right_y = point[0],point[1]
-	if point[0] >= top_right_x and point[1] <= top_right_y:
-		print point[0]," ",point[1]
-		top_right_x,top_right_y = point[0],point[1]
+	minny = min(point[1],minny)
+	maxxy = max(point[1],maxxy)
+
+for point in vertices:
+	if(point[1] >= minny - OFFSET and point[1] <= minny + OFFSET):
+		print point
+		if point[0] > top_right_x:
+			top_right_x,top_right_y = point[0],point[1]
+		if point[0] < top_left_x:
+			top_left_x,top_left_y = point[0],point[1]
+	if(point[1] >= maxxy - OFFSET and point[1] <= maxxy + OFFSET):
+		print point
+		if point[0] > bottom_right_x:
+			bottom_right_x,bottom_right_y = point[0],point[1]
+		if point[0] < bottom_left_x:
+			bottom_left_x,bottom_left_y = point[0],point[1]
+
+# for point in vertices:
+# 	if point[0] <= top_left_x - OFFSET and point[1] <= top_left_y - OFFSET:
+# 		top_left_x,top_left_y = point[0],point[1]
+# 	if point[0] <= bottom_left_x - OFFSET and point[1] - OFFSET >= bottom_left_y:
+# 		bottom_left_x,bottom_left_y = point[0],point[1]
+# 	if point[0] - OFFSET >= bottom_right_x and point[1] - OFFSET >= bottom_right_y:
+# 		bottom_right_x,bottom_right_y = point[0],point[1]
+# 	if point[0] - OFFSET >= top_right_x and point[1] <= top_right_y - OFFSET:
+# 		print point[0]," ",point[1]
+# 		top_right_x,top_right_y = point[0],point[1]
 
 # ---------------------------------------------------------------------------
 
@@ -85,6 +110,9 @@ cv2.line(img, (top_left_x,top_left_y), (top_right_x,top_right_y), GREEN, 2)
 cv2.line(img, (top_left_x,top_left_y), (bottom_left_x,bottom_left_y), GREEN, 2)
 cv2.line(img, (bottom_left_x,bottom_left_y), (bottom_right_x,bottom_right_y), GREEN, 2)
 cv2.line(img, (bottom_right_x,bottom_right_y), (top_right_x,top_right_y), GREEN, 2)
+
+plt.imshow(img),plt.show()
+
 
 # Calculating the points on all the four sides of the boards
 # ---------------------------------------------------------------------------
@@ -181,6 +209,8 @@ for i in corners:
 # Matrix to store coordinates of vertices on the board
 matrix = [[(0,0) for x in range(FACTOR+2)] for x in range(FACTOR+2)]
 
+topology = [["." for x in range(FACTOR)] for x in range(FACTOR)]
+
 # Filling the matrix
 matrix[0][0] = (top_left_x,top_left_y)
 
@@ -210,15 +240,43 @@ for i in range(0,FACTOR+1):
 # 		print matrix[i][j],
 # 	print
 
-for vertices in new_vertices:
-	print vertices[0]," ", vertices[1]
-	cv2.circle(img,(vertices[0],vertices[1]),5,GREEN,-1)
+# for vertices in new_vertices:
+# 	print vertices[0]," ", vertices[1]
+# 	cv2.circle(img,(vertices[0],vertices[1]),5,GREEN,-1)
+
+for i in range(0,FACTOR+1):
+	for j in range(0,FACTOR+1):
+		cv2.circle(img,(matrix[i][j][0],matrix[i][j][1]),3,BLUE,-1)
+
+plt.imshow(img),plt.show()
 
 for i in range(0,FACTOR):
 	for j in range(0,FACTOR):
 		cropped = img[matrix[i][j][1]:matrix[i+1][j+1][1] ,matrix[i][j][0]:matrix[i+1][j+1][0]]
 		filename = str(i)+str(j)+".jpg"
-		cv2.imwrite(filename,cropped)
-		shutil.move(filename,"temp/"+filename)
+		c = 0
+		white = 0
+		black = 0
+		for row in cropped:
+			for p in row:
+				c+=1
+				if p[0]<=100 and p[1]<=100 and p[2]<=100:
+					black+=1
+				if p[0]>=150 and p[1]>=150 and p[2]>=150:
+					white+=1
+		probW = (white*1.0)/(c*1.0)
+		probB = (black*1.0)/(c*1.0)
+
+		if(probW > 0.10):
+			topology[i][j] = 'W'
+		elif probB > 0.10:
+			topology[i][j] = 'B'
+		#cv2.imwrite(filename,cropped)
+		#shutil.move(filename,"temp/"+filename)
+
+for i in range(0,FACTOR):
+	for j in range(0,FACTOR):
+		print topology[i][j],
+	print ""
 
 plt.imshow(img),plt.show()
