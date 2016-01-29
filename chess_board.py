@@ -23,6 +23,10 @@ FACTOR = 8
 INT_MAX = 1000000009
 TOTAL_FINAL_VERTICES = 150
 OFFSET = 30
+
+WHITE_THRESHOLD = 180
+BLACK_THRESHOLD = 110
+
 # ---------------------------------------------------------------------------
 
 
@@ -44,7 +48,7 @@ vertices = []
 for i in corners:
 	x,y = i.ravel()
 	vertices.append((x,y))
-	cv2.circle(img,(x,y),5,255,-1)
+	#cv2.circle(img,(x,y),5,255,-1)
 	print x," ",y
 print "^"*30
 plt.imshow(img),plt.show()
@@ -85,17 +89,6 @@ for point in vertices:
 			bottom_right_x,bottom_right_y = point[0],point[1]
 		if point[0] < bottom_left_x:
 			bottom_left_x,bottom_left_y = point[0],point[1]
-
-# for point in vertices:
-# 	if point[0] <= top_left_x - OFFSET and point[1] <= top_left_y - OFFSET:
-# 		top_left_x,top_left_y = point[0],point[1]
-# 	if point[0] <= bottom_left_x - OFFSET and point[1] - OFFSET >= bottom_left_y:
-# 		bottom_left_x,bottom_left_y = point[0],point[1]
-# 	if point[0] - OFFSET >= bottom_right_x and point[1] - OFFSET >= bottom_right_y:
-# 		bottom_right_x,bottom_right_y = point[0],point[1]
-# 	if point[0] - OFFSET >= top_right_x and point[1] <= top_right_y - OFFSET:
-# 		print point[0]," ",point[1]
-# 		top_right_x,top_right_y = point[0],point[1]
 
 # ---------------------------------------------------------------------------
 
@@ -260,9 +253,9 @@ for i in range(0,FACTOR):
 		for row in cropped:
 			for p in row:
 				c+=1
-				if p[0]<=100 and p[1]<=100 and p[2]<=100:
+				if p[0]<=BLACK_THRESHOLD and p[1]<=BLACK_THRESHOLD and p[2]<=BLACK_THRESHOLD:
 					black+=1
-				if p[0]>=150 and p[1]>=150 and p[2]>=150:
+				if p[0]>=WHITE_THRESHOLD and p[1]>=WHITE_THRESHOLD and p[2]>=WHITE_THRESHOLD:
 					white+=1
 		probW = (white*1.0)/(c*1.0)
 		probB = (black*1.0)/(c*1.0)
@@ -271,8 +264,8 @@ for i in range(0,FACTOR):
 			topology[i][j] = 'W'
 		elif probB > 0.10:
 			topology[i][j] = 'B'
-		#cv2.imwrite(filename,cropped)
-		#shutil.move(filename,"temp/"+filename)
+		cv2.imwrite(filename,cropped)
+		shutil.move(filename,"temp/"+filename)
 
 for i in range(0,FACTOR):
 	for j in range(0,FACTOR):
