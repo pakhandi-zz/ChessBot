@@ -237,12 +237,17 @@ for i in range(0,FACTOR+1):
 # 	print vertices[0]," ", vertices[1]
 # 	cv2.circle(img,(vertices[0],vertices[1]),5,GREEN,-1)
 
+# Marking the vertices on Image
 for i in range(0,FACTOR+1):
 	for j in range(0,FACTOR+1):
 		cv2.circle(img,(matrix[i][j][0],matrix[i][j][1]),3,BLUE,-1)
 
 plt.imshow(img),plt.show()
 
+# Taking out each cell and deciding if :
+# 1> it is empty
+# 2> it has a black piece
+# 3> it has a white piece
 for i in range(0,FACTOR):
 	for j in range(0,FACTOR):
 		cropped = img[matrix[i][j][1]:matrix[i+1][j+1][1] ,matrix[i][j][0]:matrix[i+1][j+1][0]]
@@ -267,6 +272,7 @@ for i in range(0,FACTOR):
 		cv2.imwrite(filename,cropped)
 		shutil.move(filename,"temp/"+filename)
 
+# Printing the final board state
 for i in range(0,FACTOR):
 	for j in range(0,FACTOR):
 		print topology[i][j],
