@@ -7,6 +7,7 @@ import sys
 import os
 import shutil
 
+# The name of the source file and targetfile
 SourceFilename = sys.argv[1]
 TargetFilename = "Sharp_"+os.path.basename(SourceFilename)
 

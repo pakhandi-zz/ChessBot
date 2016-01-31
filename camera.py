@@ -7,11 +7,12 @@ import sys
 import os
 import shutil
 
-# 1 => to use secondary (USB) web camera
 
+# the name for the file to be saved
 filename = sys.argv[1] + ".jpg"
 
-cap = cv2.VideoCapture(0)
+# 1 => to use secondary (USB) web camera
+cap = cv2.VideoCapture(1)
 
 while(True):
 	# Capture frame-by-frame
