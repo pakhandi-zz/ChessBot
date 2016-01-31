@@ -29,6 +29,7 @@ BLACK_THRESHOLD = 110
 
 # ---------------------------------------------------------------------------
 
+# Checking arguments
 if len(sys.argv) != 3:
 	print "Correct Usage : python chess_board.py <SourceFilename> <NumberOfInitialVertices>"
 	exit()

@@ -7,6 +7,7 @@ import sys
 import os
 import shutil
 
+# Checking arguments
 if len(sys.argv) != 2:
 	print "Correct Usage : python sharpen.py <SourceFilename>"
 	exit()
