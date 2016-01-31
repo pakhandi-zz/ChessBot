@@ -8,8 +8,7 @@ import os
 import shutil
 
 
-print len(sys.argv)
-
+# Checking arguments
 if len(sys.argv) != 2:
 	print "Correct Usage : python camera.py <DesiredFilename>"
 	exit()
