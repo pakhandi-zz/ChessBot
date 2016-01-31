@@ -7,6 +7,10 @@ import sys
 import os
 import shutil
 
+if len(sys.argv) != 2:
+	print "Correct Usage : python sharpen.py <SourceFilename>"
+	exit()
+
 # The name of the source file and targetfile
 SourceFilename = sys.argv[1]
 TargetFilename = "Sharp_"+os.path.basename(SourceFilename)

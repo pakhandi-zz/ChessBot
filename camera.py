@@ -8,6 +8,12 @@ import os
 import shutil
 
 
+print len(sys.argv)
+
+if len(sys.argv) != 2:
+	print "Correct Usage : python camera.py <DesiredFilename>"
+	exit()
+
 # the name for the file to be saved
 filename = sys.argv[1] + ".jpg"
 

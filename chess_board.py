@@ -29,6 +29,9 @@ BLACK_THRESHOLD = 110
 
 # ---------------------------------------------------------------------------
 
+if len(sys.argv) != 3:
+	print "Correct Usage : python chess_board.py <SourceFilename> <NumberOfInitialVertices>"
+	exit()
 
 # Reading the image file
 img = cv2.imread(sys.argv[1])
