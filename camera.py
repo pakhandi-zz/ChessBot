@@ -3,9 +3,15 @@
 '''
 import numpy as np
 import cv2
+import sys
+import os
+import shutil
 
 # 1 => to use secondary (USB) web camera
-cap = cv2.VideoCapture(1)
+
+filename = sys.argv[1] + ".jpg"
+
+cap = cv2.VideoCapture(0)
 
 while(True):
 	# Capture frame-by-frame
@@ -19,7 +25,10 @@ while(True):
 
 	#Save the frame and quit on 'q'
 	if cv2.waitKey(1) & 0xFF == ord('q'):
-		cv2.imwrite("filename.jpg",frame)
+		cv2.imwrite(filename,frame)
+		if not os.path.exists("img/"):
+			os.makedirs("img/")
+		shutil.move(filename,"img/"+filename)
 		break
 
 # When everything done, release the capture
