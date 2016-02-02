@@ -24,8 +24,8 @@ INT_MAX = 1000000009
 TOTAL_FINAL_VERTICES = 150
 OFFSET = 30
 
-WHITE_THRESHOLD = 180
-BLACK_THRESHOLD = 110
+WHITE_THRESHOLD = 140
+BLACK_THRESHOLD = 80
 
 # ---------------------------------------------------------------------------
 
@@ -52,10 +52,12 @@ vertices = []
 for i in corners:
 	x,y = i.ravel()
 	vertices.append((x,y))
+	# Initially detected points
 	#cv2.circle(img,(x,y),5,255,-1)
-	print x," ",y
-print "^"*30
-plt.imshow(img),plt.show()
+	#print x," ",y
+
+#print "^"*30
+#plt.imshow(img),plt.show()
 
 # Variables to store four corners of the board
 bottom_left_x = INT_MAX
@@ -82,13 +84,13 @@ for point in vertices:
 
 for point in vertices:
 	if(point[1] >= minny - OFFSET and point[1] <= minny + OFFSET):
-		print point
+		#print point
 		if point[0] > top_right_x:
 			top_right_x,top_right_y = point[0],point[1]
 		if point[0] < top_left_x:
 			top_left_x,top_left_y = point[0],point[1]
 	if(point[1] >= maxxy - OFFSET and point[1] <= maxxy + OFFSET):
-		print point
+		#print point
 		if point[0] > bottom_right_x:
 			bottom_right_x,bottom_right_y = point[0],point[1]
 		if point[0] < bottom_left_x:
@@ -108,7 +110,9 @@ cv2.line(img, (top_left_x,top_left_y), (bottom_left_x,bottom_left_y), GREEN, 2)
 cv2.line(img, (bottom_left_x,bottom_left_y), (bottom_right_x,bottom_right_y), GREEN, 2)
 cv2.line(img, (bottom_right_x,bottom_right_y), (top_right_x,top_right_y), GREEN, 2)
 
+# Image with borders made
 plt.imshow(img),plt.show()
+# cv2.imwrite("border.jpg",img);
 
 
 # Calculating the points on all the four sides of the boards
@@ -201,6 +205,8 @@ new_vertices = []
 
 for i in corners:
 	x,y = i.ravel()
+	# New Vertices made on board
+	#cv2.circle(img,(x,y),2,RED,-1)
 	new_vertices.append((x,y))
 
 # Matrix to store coordinates of vertices on the board
@@ -211,10 +217,14 @@ topology = [["." for x in range(FACTOR)] for x in range(FACTOR)]
 # Filling the matrix
 matrix[0][0] = (top_left_x,top_left_y)
 
-for i in range(0,FACTOR+1):
-	for j in range(0,FACTOR+1):
+for i in range(0,FACTOR):
+	for j in range(0,FACTOR):
 		predicted_x = matrix[i][j][0] + top_unit_length
 		predicetd_y = matrix[i][j][1] + left_unit_length
+
+		# Predicted points
+		#cv2.circle(img,(predicted_x,matrix[i][j][1]),5,RED,-1)
+		#cv2.circle(img,(matrix[i][j][0],predicetd_y),5,RED,-1)
 
 		minn_dist = INT_MAX
 
@@ -232,6 +242,11 @@ for i in range(0,FACTOR+1):
 				matrix[i+1][j] = point;
 				minn_dist = this_dist
 
+matrix[FACTOR][FACTOR] = (bottom_right_x,bottom_right_y)
+
+# Predicted Vertices plotted on image
+#cv2.imwrite("predicted.jpg",img)
+
 # for i in range(0,4):
 # 	for j in range(0,4):
 # 		print matrix[i][j],
@@ -244,8 +259,9 @@ for i in range(0,FACTOR+1):
 # Marking the vertices on Image
 for i in range(0,FACTOR+1):
 	for j in range(0,FACTOR+1):
-		cv2.circle(img,(matrix[i][j][0],matrix[i][j][1]),3,BLUE,-1)
+		cv2.circle(img,(matrix[i][j][0],matrix[i][j][1]),5,BLUE,-1)
 
+# Final grid on image
 plt.imshow(img),plt.show()
 
 # Taking out each cell and deciding if :
@@ -269,6 +285,9 @@ for i in range(0,FACTOR):
 		probW = (white*1.0)/(c*1.0)
 		probB = (black*1.0)/(c*1.0)
 
+		# Probability of white piece and black piece at every cell
+		print i," ",j," ",int(probW*100)," ",int(probB*100)
+
 		if(probW > 0.10):
 			topology[i][j] = 'W'
 		elif probB > 0.10:
@@ -282,4 +301,6 @@ for i in range(0,FACTOR):
 		print topology[i][j],
 	print ""
 
+# Final grid on image
 plt.imshow(img),plt.show()
+#cv2.imwrite("grid.jpg",img)
