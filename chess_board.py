@@ -22,10 +22,12 @@ BLUE  = (0,0,255)
 FACTOR = 8
 INT_MAX = 1000000009
 TOTAL_FINAL_VERTICES = 150
-OFFSET = 30
+OFFSET = 10
 
-WHITE_THRESHOLD = 140
+WHITE_THRESHOLD = 130
 BLACK_THRESHOLD = 80
+
+PROBABILITY_THRESHOLD = 0.30
 
 # ---------------------------------------------------------------------------
 
@@ -42,6 +44,23 @@ gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 def get_dist((x1,y1), (x2,y2)):
 	return int(sqrt( (y2-y1)**2 + (x2-x1)**2 ))
 
+def get_midPoint((x1,y1), (x2,y2)):
+	return ( int((x1+x2)/2) , int((y1+y2)/2) )
+
+def populate(SP, EP):
+	ls = [(0,0) for x in range(FACTOR+1)]
+	ls[0] = SP
+	ls[8] = EP
+	ls[4] = get_midPoint(ls[0],ls[8])
+	ls[2] = get_midPoint(ls[0],ls[4])
+	ls[1] = get_midPoint(ls[0],ls[2])
+	ls[3] = get_midPoint(ls[2],ls[4])
+	ls[6] = get_midPoint(ls[4],ls[8])
+	ls[5] = get_midPoint(ls[4],ls[6])
+	ls[7] = get_midPoint(ls[8],ls[6])
+	return ls
+
+
 # Detecting vertices in the image
 corners = cv2.goodFeaturesToTrack(gray,int(sys.argv[2]),0.01,10)
 corners = np.int0(corners)
@@ -53,7 +72,7 @@ for i in corners:
 	x,y = i.ravel()
 	vertices.append((x,y))
 	# Initially detected points
-	#cv2.circle(img,(x,y),5,255,-1)
+	#cv2.circle(img,(x,y),2,RED,-1)
 	#print x," ",y
 
 #print "^"*30
@@ -111,77 +130,17 @@ cv2.line(img, (bottom_left_x,bottom_left_y), (bottom_right_x,bottom_right_y), GR
 cv2.line(img, (bottom_right_x,bottom_right_y), (top_right_x,top_right_y), GREEN, 2)
 
 # Image with borders made
-plt.imshow(img),plt.show()
+#plt.imshow(img),plt.show()
 # cv2.imwrite("border.jpg",img);
 
+# Trying to get more precise points on left line
+left_line = populate( (top_left_x,top_left_y) , (bottom_left_x,bottom_left_y) )
 
-# Calculating the points on all the four sides of the boards
-# ---------------------------------------------------------------------------
-# Top Side
+top_line = populate( (top_left_x,top_left_y) , (top_right_x, top_right_y) )
 
-top_line = []
-top_line.append( (top_left_x,top_left_y) )
-top_line_length = get_dist( (top_left_x, top_left_y) , (top_right_x,top_right_y))
-top_unit_length = top_line_length / FACTOR
+bottom_line = populate( (bottom_left_x,bottom_left_y), (bottom_right_x, bottom_right_y) )
 
-
-for i in range(0,FACTOR-1):
-	top_line.append( (top_left_x + ( top_unit_length * (i+1) ) , top_left_y ) )
-
-top_line.append( (top_right_x, top_right_y ) )
-
-for point in top_line:
-	cv2.circle(img,(point[0],point[1]), 1, BLUE, -1)
-
-# ---------------------------------------------------------------------------
-# Bottom Side
-
-bottom_line = []
-bottom_line.append( (bottom_left_x,bottom_left_y) )
-bottom_line_length = get_dist( (bottom_left_x,bottom_left_y) , (bottom_right_x, bottom_right_y))
-bottom_unit_length = bottom_line_length / FACTOR
-
-for i in range(0,FACTOR-1):
-	bottom_line.append( (bottom_left_x + ( bottom_unit_length * (i+1) ) , bottom_left_y ) )
-
-bottom_line.append( (bottom_right_x, bottom_right_y) )
-
-for point in bottom_line:
-	cv2.circle(img, (int(point[0]),int(point[1])) , 1, BLUE, -1)
-
-# ---------------------------------------------------------------------------
-# Left Side
-
-left_line = []
-left_line.append( (top_left_x,top_left_y) )
-left_line_length = get_dist( (top_left_x,top_left_y) , (bottom_left_x, bottom_left_y))
-left_unit_length = left_line_length / FACTOR
-
-for i in range(0,FACTOR-1):
-	left_line.append( (top_left_x , top_left_y + ( (i+1) * left_unit_length ) ) );
-
-left_line.append( (bottom_left_x, bottom_left_y) )
-
-for point in left_line:
-	cv2.circle(img, (int(point[0]),int(point[1])) , 1, BLUE, -1)
-
-# ---------------------------------------------------------------------------
-# Right Side
-
-right_line = []
-right_line.append( (top_right_x,top_right_y) )
-right_line_length = get_dist( (top_right_x,top_right_y) , (bottom_right_x, bottom_right_y))
-right_unit_length = right_line_length / FACTOR
-
-for i in range(0,FACTOR-1):
-	right_line.append( (top_right_x , top_right_y + ( (i+1) * right_unit_length ) ) );
-
-right_line.append( (bottom_right_x, bottom_right_y) )
-
-for point in right_line:
-	cv2.circle(img, (int(point[0]),int(point[1])) , 1, BLUE, -1)
-
-# ---------------------------------------------------------------------------
+right_line = populate(  (top_right_x,top_right_y) , (bottom_right_x, bottom_right_y) )
 
 
 # Drawing the remaining edges of the board using the points detected on sides of board
@@ -219,8 +178,8 @@ matrix[0][0] = (top_left_x,top_left_y)
 
 for i in range(0,FACTOR):
 	for j in range(0,FACTOR):
-		predicted_x = matrix[i][j][0] + top_unit_length
-		predicetd_y = matrix[i][j][1] + left_unit_length
+		predicted_x = matrix[i][j][0] + int( (right_line[i][0] - left_line[i][0]) / 8 )
+		predicetd_y = matrix[i][j][1] + int( (bottom_line[j][1] - top_line[j][1]) / 8 )
 
 		# Predicted points
 		#cv2.circle(img,(predicted_x,matrix[i][j][1]),5,RED,-1)
@@ -262,7 +221,7 @@ for i in range(0,FACTOR+1):
 		cv2.circle(img,(matrix[i][j][0],matrix[i][j][1]),5,BLUE,-1)
 
 # Final grid on image
-plt.imshow(img),plt.show()
+#plt.imshow(img),plt.show()
 
 # Taking out each cell and deciding if :
 # 1> it is empty
@@ -275,9 +234,11 @@ for i in range(0,FACTOR):
 		c = 0
 		white = 0
 		black = 0
+		tot = 0
 		for row in cropped:
 			for p in row:
 				c+=1
+				tot = tot + p[0] + p[1] + p[2]
 				if p[0]<=BLACK_THRESHOLD and p[1]<=BLACK_THRESHOLD and p[2]<=BLACK_THRESHOLD:
 					black+=1
 				if p[0]>=WHITE_THRESHOLD and p[1]>=WHITE_THRESHOLD and p[2]>=WHITE_THRESHOLD:
@@ -286,11 +247,11 @@ for i in range(0,FACTOR):
 		probB = (black*1.0)/(c*1.0)
 
 		# Probability of white piece and black piece at every cell
-		print i," ",j," ",int(probW*100)," ",int(probB*100)
+		print i," ",j," ",int(probW*100)," ",int(probB*100)," ",int(tot/c)
 
-		if(probW > 0.10):
+		if(probW > PROBABILITY_THRESHOLD):
 			topology[i][j] = 'W'
-		elif probB > 0.10:
+		elif probB > PROBABILITY_THRESHOLD:
 			topology[i][j] = 'B'
 		cv2.imwrite(filename,cropped)
 		shutil.move(filename,"temp/"+filename)
