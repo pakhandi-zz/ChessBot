@@ -24,10 +24,10 @@ INT_MAX = 1000000009
 TOTAL_FINAL_VERTICES = 150
 OFFSET = 10
 
-WHITE_THRESHOLD = 130
+WHITE_THRESHOLD = 142
 BLACK_THRESHOLD = 80
 
-PROBABILITY_THRESHOLD = 0.30
+PROBABILITY_THRESHOLD = 0.13
 
 # ---------------------------------------------------------------------------
 
@@ -229,8 +229,15 @@ for i in range(0,FACTOR+1):
 # 3> it has a white piece
 for i in range(0,FACTOR):
 	for j in range(0,FACTOR):
-		cropped = img[matrix[i][j][1]:matrix[i+1][j+1][1] ,matrix[i][j][0]:matrix[i+1][j+1][0]]
 		filename = str(i)+str(j)+".jpg"
+
+		cropped = img[matrix[i][j][1]+5:matrix[i+1][j+1][1]-5 ,matrix[i][j][0]+5:matrix[i+1][j+1][0]-5]
+		#cropped = img[matrix[i][j][1]:matrix[i+1][j+1][1] ,matrix[i][j][0]:matrix[i+1][j+1][0]]
+		cv2.imwrite(filename,cropped)
+		shutil.move(filename,"temp/"+filename)
+		
+		cropped = img[matrix[i][j][1]+5:matrix[i+1][j+1][1]-5 ,matrix[i][j][0]+5:matrix[i+1][j+1][0]-5]
+
 		c = 0
 		white = 0
 		black = 0
@@ -253,8 +260,7 @@ for i in range(0,FACTOR):
 			topology[i][j] = 'W'
 		elif probB > PROBABILITY_THRESHOLD:
 			topology[i][j] = 'B'
-		cv2.imwrite(filename,cropped)
-		shutil.move(filename,"temp/"+filename)
+		
 
 # Printing the final board state
 for i in range(0,FACTOR):
@@ -264,4 +270,6 @@ for i in range(0,FACTOR):
 
 # Final grid on image
 plt.imshow(img),plt.show()
+#cropped = img[top_left_y:bottom_right_y ,top_left_x:bottom_right_x]
+#cv2.imwrite("_grid.jpg",cropped)
 #cv2.imwrite("grid.jpg",img)
