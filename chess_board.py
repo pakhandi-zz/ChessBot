@@ -12,6 +12,11 @@ from matplotlib import pyplot as plt
 from math import *
 import shutil
 
+# Checking arguments
+if len(sys.argv) != 3:
+	print "Correct Usage : python chess_board.py <SourceFilename> <NumberOfInitialVertices>"
+	exit()
+
 # Global Constants
 # ---------------------------------------------------------------------------
 
@@ -29,24 +34,24 @@ BLACK_THRESHOLD = 80
 
 PROBABILITY_THRESHOLD = 0.13
 
+SOURCE_FILE = sys.argv[1]
+INITIAL_VERTICES = sys.argv[2]
+
 # ---------------------------------------------------------------------------
 
-# Checking arguments
-if len(sys.argv) != 3:
-	print "Correct Usage : python chess_board.py <SourceFilename> <NumberOfInitialVertices>"
-	exit()
-
 # Reading the image file
-img = cv2.imread(sys.argv[1])
+img = cv2.imread(SOURCE_FILE)
 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
 # Function to get distance between two points in 2-D plane
 def get_dist((x1,y1), (x2,y2)):
 	return int(sqrt( (y2-y1)**2 + (x2-x1)**2 ))
 
+# Function to get mid-point of a line segment
 def get_midPoint((x1,y1), (x2,y2)):
 	return ( int((x1+x2)/2) , int((y1+y2)/2) )
 
+# Function to get 9 equidistant points on a line segment
 def populate(SP, EP):
 	ls = [(0,0) for x in range(FACTOR+1)]
 	ls[0] = SP
@@ -60,9 +65,8 @@ def populate(SP, EP):
 	ls[7] = get_midPoint(ls[8],ls[6])
 	return ls
 
-
 # Detecting vertices in the image
-corners = cv2.goodFeaturesToTrack(gray,int(sys.argv[2]),0.01,10)
+corners = cv2.goodFeaturesToTrack(gray,int(INITIAL_VERTICES),0.01,10)
 corners = np.int0(corners)
 
 vertices = []
@@ -133,7 +137,7 @@ cv2.line(img, (bottom_right_x,bottom_right_y), (top_right_x,top_right_y), GREEN,
 #plt.imshow(img),plt.show()
 # cv2.imwrite("border.jpg",img);
 
-# Trying to get more precise points on left line
+# Trying to get more precise points the borders
 left_line = populate( (top_left_x,top_left_y) , (bottom_left_x,bottom_left_y) )
 
 top_line = populate( (top_left_x,top_left_y) , (top_right_x, top_right_y) )
