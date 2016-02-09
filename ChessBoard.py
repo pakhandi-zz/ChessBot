@@ -37,7 +37,7 @@ class ChessBoard:
 	CORNERS = []
 	TOPOLOGY = []
 
-	def __init__(self, SourceFile, InitialVerticesCount, FinalVerticesCount, Offset, WhiteThreshold, BlackThreashold, ProbabilityThreshold):
+	def __init__(self, SourceFile, InitialVerticesCount, FinalVerticesCount = 150, Offset = 10, WhiteThreshold = 142, BlackThreashold = 80, ProbabilityThreshold = 0.13):
 		
 		self.SOURCE_FILE = SourceFile
 		self.INITIAL_VERTICES_COUNT = InitialVerticesCount

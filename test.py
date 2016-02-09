@@ -1,6 +1,14 @@
+import sys
 import ChessBoard
 
-obj = ChessBoard.ChessBoard("temp/Sharp_r2.jpg", 200, 150, 10, 142, 80, 0.13)
+if len(sys.argv) != 3:
+	print "Correct Usage : python chess_board.py <SourceFilename> <NumberOfInitialVertices>"
+	exit()
+
+SourceFilename = sys.argv[1]
+InitialVerticesCount = sys.argv[2]
+
+obj = ChessBoard.ChessBoard(SourceFilename, InitialVerticesCount)
 corners = obj.getFourCorners()
 
 for point in corners:
