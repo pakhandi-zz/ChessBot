@@ -52,15 +52,18 @@ class ChessBoard:
 		self.BLACK_THRESHOLD = BlackThreashold
 		self.PROBABILITY_THRESHOLD = ProbabilityThreshold
 
-		self.INITIAL_VERTICES = cv2.goodFeaturesToTrack(self.gray,int(self.INITIAL_VERTICES_COUNT),0.01,10)
+		self.INITIAL_VERTICES = cv2.goodFeaturesToTrack(self.gray,int(self.INITIAL_VERTICES_COUNT),0.03,10)
 		self.INITIAL_VERTICES = np.int0(self.INITIAL_VERTICES)
 
 	def detectFourCorners(self):
 
 		vertices = []
 
+		tempImg = self.img[:]
+
 		for i in self.INITIAL_VERTICES:
 			x,y = i.ravel()
+			cv2.circle(tempImg,(x,y),3,self.RED,-1)
 			vertices.append((x,y))
 
 		# Variables to store four corners of the board
@@ -105,34 +108,24 @@ class ChessBoard:
 		self.CORNERS.append((top_right_x,top_right_y))
 		self.CORNERS.append((bottom_right_x,bottom_right_y))
 
-
-	def getFourCorners(self):
-		if(len(self.CORNERS) == 4):
-			return CORNERS
-		self.detectFourCorners()
-		return self.CORNERS
-
-	def displayFourCorners(self):
+	def plotFourCorners(self):
 		tempImg = self.img
 		for point in self.CORNERS:
 			cv2.circle(tempImg,point,3,self.RED,-1)
-		plt.imshow(tempImg),plt.show()
 
-	def displayFourEdges(self):
+	def plotOuterEdges(self):
 		tempImg = self.img
 		for i in range(0,4):
 			cv2.line(tempImg, (self.CORNERS[i]), (self.CORNERS[(i+1)%4]), self.GREEN, 2 )
-		plt.imshow(tempImg),plt.show()
 
 	def detectVerticesOnOuterEdges(self):
 		for i in range(0,4):
 			self.OUTER_VERTICES.append( Geometry.partitionLine((self.CORNERS[i]), (self.CORNERS[(i+1)%4]), self.FACTOR) )
 
-	def displayAllEdges(self):
+	def plotAllEdges(self):
 		for j in range(0,2):
 			for i in range(0,self.FACTOR+1):
 				cv2.line(self.img, (self.OUTER_VERTICES[j][i]) , (self.OUTER_VERTICES[j+2][self.FACTOR - i]), self.RED , 1)
-		plt.imshow(self.img),plt.show()
 
 	def detectAllVertices(self):
 		# Detecting vertices on the newly constructed board
@@ -176,12 +169,6 @@ class ChessBoard:
 
 		self.ALL_VERTICES[self.FACTOR][self.FACTOR] = (self.CORNERS[3])
 
-	def displayAllVertices(self):
-		for i in range(0,self.FACTOR+1):
-			for j in range(0,self.FACTOR+1):
-				cv2.circle(self.img,(self.ALL_VERTICES[i][j]),5,self.BLUE,-1)
-		plt.imshow(self.img),plt.show()
-
 	def createTopology(self):
 		# Taking out each cell and deciding if :
 		# 1> it is empty
@@ -222,6 +209,41 @@ class ChessBoard:
 					self.TOPOLOGY[i][j] = 'W'
 				elif probB > self.PROBABILITY_THRESHOLD:
 					self.TOPOLOGY[i][j] = 'B'
+
+	def getFourCorners(self):
+		return self.CORNERS
+
+	def getAllVertices(self):
+		return self.ALL_VERTICES
+
+	def getTopology(self):
+		return self.TOPOLOGY
+
+	def displayFourCorners(self):
+		tempImg = cv2.imread(self.SOURCE_FILE)
+		for point in self.CORNERS:
+			cv2.circle(tempImg,point,3,self.RED,-1)
+		plt.imshow(tempImg),plt.show()
+
+	def displayFourEdges(self):
+		tempImg = cv2.imread(self.SOURCE_FILE)
+		for i in range(0,4):
+			cv2.line(tempImg, (self.CORNERS[i]), (self.CORNERS[(i+1)%4]), self.GREEN, 2 )
+		plt.imshow(tempImg),plt.show()
+
+	def displayAllEdges(self):
+		tempImg = cv2.imread(self.SOURCE_FILE)
+		for j in range(0,2):
+			for i in range(0,self.FACTOR+1):
+				cv2.line(tempImg, (self.OUTER_VERTICES[j][i]) , (self.OUTER_VERTICES[j+2][self.FACTOR - i]), self.RED , 1)
+		plt.imshow(tempImg),plt.show()
+
+	def displayAllVertices(self):
+		tempImg = cv2.imread(self.SOURCE_FILE)
+		for i in range(0,self.FACTOR+1):
+			for j in range(0,self.FACTOR+1):
+				cv2.circle(tempImg,(self.ALL_VERTICES[i][j]),5,self.BLUE,-1)
+		plt.imshow(tempImg),plt.show()
 
 	def displayTopology(self):
 		for i in range(0,self.FACTOR):

@@ -9,16 +9,15 @@ SourceFilename = sys.argv[1]
 InitialVerticesCount = sys.argv[2]
 
 obj = ChessBoard.ChessBoard(SourceFilename, InitialVerticesCount)
-corners = obj.getFourCorners()
 
-for point in corners:
-	print point
-
-obj.displayFourCorners()
-obj.displayFourEdges()
+obj.detectFourCorners()
+obj.plotFourCorners()
+obj.plotOuterEdges()
 obj.detectVerticesOnOuterEdges()
-obj.displayAllEdges()
+obj.plotAllEdges()
 obj.detectAllVertices()
-obj.displayAllVertices()
 obj.createTopology()
 obj.displayTopology()
+
+obj.displayAllVertices()
+obj.displayFourCorners()
