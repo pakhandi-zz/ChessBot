@@ -7,34 +7,53 @@ import shutil
 import Geometry
 
 class ChessBoard:
+	# Colors
 	RED   = (255,0,0)
 	GREEN = (0,255,0)
 	BLUE  = (0,0,255)
 
+	# Number of cells to be detected
 	FACTOR = 8
+
+	# A very high value
 	INT_MAX = 1000000009
 
+	# Number of vertices to be detected for final detection of all vertices
 	FINAL_VERTICES_COUNT = 150
+
+	# Amount of relaxation allowed in y-axis detection of corners
 	OFFSET = 10
 
+	# Threshold for white and black piece detection
 	WHITE_THRESHOLD = 142
 	BLACK_THRESHOLD = 80
 
+	# Threshold of probability for pieces
 	PROBABILITY_THRESHOLD = 0.13
 
+	# The location of the source file for image
 	SOURCE_FILE = None
+
+	# Number of vertices to be detected for initial detection of corners
 	INITIAL_VERTICES_COUNT = None
 
+	# The image to be processed and it's grayscale
 	img = None
 	gray = None
 
+	# List for initial vertices on board
 	INITIAL_VERTICES = []
-	FINAL_VERTICES = []
 
+	# List of all vertices that lie on border
 	OUTER_VERTICES = []
+
+	# List for all the vertices detected on board at the end
 	ALL_VERTICES = []
 
+	# The four corners on the board
 	CORNERS = []
+
+	# The topology after probability calculation
 	TOPOLOGY = []
 
 	def __init__(self, SourceFile, InitialVerticesCount, FinalVerticesCount = 150, Offset = 10, WhiteThreshold = 142, BlackThreashold = 80, ProbabilityThreshold = 0.13):
@@ -59,11 +78,8 @@ class ChessBoard:
 
 		vertices = []
 
-		tempImg = self.img[:]
-
 		for i in self.INITIAL_VERTICES:
 			x,y = i.ravel()
-			cv2.circle(tempImg,(x,y),3,self.RED,-1)
 			vertices.append((x,y))
 
 		# Variables to store four corners of the board
