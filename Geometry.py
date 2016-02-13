@@ -1,4 +1,5 @@
 from math import *
+
 # Function to get distance between two points in 2-D plane
 def getPointsDistance((x1,y1), (x2,y2)):
 	return int(sqrt( (y2-y1)**2 + (x2-x1)**2 ))
@@ -8,6 +9,7 @@ def getMidPoint((x1,y1), (x2,y2)):
 	return ( int((x1+x2)/2) , int((y1+y2)/2) )
 
 # Function to get "Segments" equal segments on a line-segment
+# returns a list of "Segments + 1" equidistant points on line-segment
 def partitionLine(SP, EP, Segments):
 	Points = Segments + 1
 	ls = [(0,0) for x in range(Points)]
