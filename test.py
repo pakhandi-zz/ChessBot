@@ -1,23 +1,16 @@
 import sys
 import ChessBoard
 
-if len(sys.argv) != 3:
+if len(sys.argv) != 4:
 	print "Correct Usage : python chess_board.py <SourceFilename> <NumberOfInitialVertices>"
 	exit()
 
 SourceFilename = sys.argv[1]
 InitialVerticesCount = sys.argv[2]
+toTest = sys.argv[3]
 
 obj = ChessBoard.ChessBoard(SourceFilename, InitialVerticesCount)
 
-obj.detectFourCorners()
-obj.plotFourCorners()
-obj.plotOuterEdges()
-obj.detectVerticesOnOuterEdges()
-obj.plotAllEdges()
-obj.detectAllVertices()
-obj.createTopology()
-obj.displayTopology()
+obj.update(toTest)
 
-obj.displayAllVertices()
-obj.displayFourCorners()
+obj.displayTopology()

@@ -24,12 +24,14 @@ class ChessBoard:
 	# Amount of relaxation allowed in y-axis detection of corners
 	OFFSET = 10
 
+	OFFSET2 = 5
+
 	# Threshold for white and black piece detection
 	WHITE_THRESHOLD = 142
 	BLACK_THRESHOLD = 80
 
 	# Threshold of probability for pieces
-	PROBABILITY_THRESHOLD = 0.13
+	PROBABILITY_THRESHOLD = 0.01
 
 	# The location of the source file for image
 	SOURCE_FILE = None
@@ -40,9 +42,6 @@ class ChessBoard:
 	# The image to be processed and it's grayscale
 	img = None
 	gray = None
-
-	# List for initial vertices on board
-	INITIAL_VERTICES = []
 
 	# List of all vertices that lie on border
 	OUTER_VERTICES = []
@@ -56,7 +55,10 @@ class ChessBoard:
 	# The topology after probability calculation
 	TOPOLOGY = []
 
-	def __init__(self, SourceFile, InitialVerticesCount, FinalVerticesCount = 150, Offset = 10, WhiteThreshold = 142, BlackThreashold = 80, ProbabilityThreshold = 0.13):
+	WHITES = [(1,1),(1,4),(2,2),(5,5),(0,7)]
+	BLACKS = [(2,4),(6,1),(6,2),(7,7)]
+
+	def __init__(self, SourceFile, InitialVerticesCount, FinalVerticesCount = 150, Offset = 10):
 		
 		self.SOURCE_FILE = SourceFile
 		self.INITIAL_VERTICES_COUNT = InitialVerticesCount
@@ -67,18 +69,47 @@ class ChessBoard:
 		self.FINAL_VERTICES_COUNT = FinalVerticesCount
 		self.OFFSET = Offset
 
-		self.WHITE_THRESHOLD = WhiteThreshold
-		self.BLACK_THRESHOLD = BlackThreashold
-		self.PROBABILITY_THRESHOLD = ProbabilityThreshold
+		self.process()
 
-		self.INITIAL_VERTICES = cv2.goodFeaturesToTrack(self.gray,int(self.INITIAL_VERTICES_COUNT),0.03,10)
-		self.INITIAL_VERTICES = np.int0(self.INITIAL_VERTICES)
+		self.fixThresholds()
+
+	def sharpen(self,testImg):
+		#Create the identity filter, but with the 1 shifted to the right!
+		kernel = np.zeros( (9,9), np.float32)
+		kernel[4,4] = 2.0   #Identity, times two! 
+
+		#Create a box filter:
+		boxFilter = np.ones( (9,9), np.float32) / 81.0
+
+		#Subtract the two:
+		kernel = kernel - boxFilter
+
+		custom = cv2.filter2D(testImg, -1, kernel)
+		return testImg
+
+	def process(self):
+		self.detectFourCorners()
+		self.plotFourCorners()
+		self.plotOuterEdges()
+		self.detectVerticesOnOuterEdges()
+		self.plotAllEdges()
+		self.detectAllVertices()
+
+	def update(self, SourceFile):
+		self.SOURCE_FILE = SourceFile
+		self.img = cv2.imread(self.SOURCE_FILE)
+		self.gray = cv2.cvtColor(self.img,cv2.COLOR_BGR2GRAY)
+		self.process()
+		self.createTopology()
 
 	def detectFourCorners(self):
 
+		INITIAL_VERTICES = cv2.goodFeaturesToTrack(self.gray,int(self.INITIAL_VERTICES_COUNT),0.03,10)
+		INITIAL_VERTICES = np.int0(INITIAL_VERTICES)
+
 		vertices = []
 
-		for i in self.INITIAL_VERTICES:
+		for i in INITIAL_VERTICES:
 			x,y = i.ravel()
 			vertices.append((x,y))
 
@@ -190,6 +221,9 @@ class ChessBoard:
 		# 1> it is empty
 		# 2> it has a black piece
 		# 3> it has a white piece
+
+		print self.WHITE_THRESHOLD," ",self.BLACK_THRESHOLD
+
 		self.TOPOLOGY = [["." for x in range(self.FACTOR)] for x in range(self.FACTOR)]
 
 		for i in range(0,self.FACTOR):
@@ -202,13 +236,23 @@ class ChessBoard:
 				shutil.move(filename,"temp/"+filename)
 				
 				cropped = self.img[self.ALL_VERTICES[i][j][1]+5:self.ALL_VERTICES[i+1][j+1][1]-5 ,self.ALL_VERTICES[i][j][0]+5:self.ALL_VERTICES[i+1][j+1][0]-5]
+				cropped = self.sharpen(cropped)
+
+
+				height = len(cropped)
+				width = len(cropped[0])
+
+				width = int(width / 2)
+				height = int(height / 2)
 
 				c = 0
 				white = 0
 				black = 0
 				tot = 0
-				for row in cropped:
-					for p in row:
+
+				for x in range(height-self.OFFSET2,height+self.OFFSET2):
+					for y in range(width-self.OFFSET2, width+self.OFFSET2):
+						p = cropped[x][y]
 						c+=1
 						tot = tot + p[0] + p[1] + p[2]
 						if p[0]<=self.BLACK_THRESHOLD and p[1]<=self.BLACK_THRESHOLD and p[2]<=self.BLACK_THRESHOLD:
@@ -221,9 +265,9 @@ class ChessBoard:
 				# Probability of white piece and black piece at every cell
 				print i," ",j," ",int(probW*100)," ",int(probB*100)," ",int(tot/c)
 
-				if(probW > self.PROBABILITY_THRESHOLD):
+				if(probW >= self.PROBABILITY_THRESHOLD and probW > probB):
 					self.TOPOLOGY[i][j] = 'W'
-				elif probB > self.PROBABILITY_THRESHOLD:
+				elif probB >= self.PROBABILITY_THRESHOLD:
 					self.TOPOLOGY[i][j] = 'B'
 
 	def getFourCorners(self):
@@ -267,4 +311,30 @@ class ChessBoard:
 				print self.TOPOLOGY[i][j],
 			print ""
 
+	def fixThresholds(self):
+		minn_brightness = self.INT_MAX
+		maxx_brightness = 0
+		for x in range(0,self.FACTOR):
+			for y in range(0,self.FACTOR):
+				if (x,y) in self.WHITES:
+					continue
+				if (x,y) in self.BLACKS:
+					continue
+				cropped = self.img[self.ALL_VERTICES[x][y][1]+5:self.ALL_VERTICES[x+1][y+1][1]-5 ,self.ALL_VERTICES[x][y][0]+5:self.ALL_VERTICES[x+1][y+1][0]-5]
+				cropped = self.sharpen(cropped)
 
+				height = len(cropped)
+				width = len(cropped[0])
+
+				width = int(width / 2)
+				height = int(height / 2)
+
+				for i in range(height-self.OFFSET2,height+self.OFFSET2):
+					for j in range(width-self.OFFSET2,width+self.OFFSET2):
+						minn_brightness = min(minn_brightness,cropped[i][j][0],cropped[i][j][1], cropped[i][j][2])
+						maxx_brightness = max(maxx_brightness,cropped[i][j][0],cropped[i][j][1], cropped[i][j][2])
+
+				# print x," ",y," ",minn_brightness," ",maxx_brightness
+
+		self.WHITE_THRESHOLD = maxx_brightness 
+		self.BLACK_THRESHOLD = minn_brightness 
