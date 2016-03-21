@@ -1,3 +1,10 @@
+'''
+
+	Gives correct output for X2, X3, X4, X6, X7
+	X1 : One cell error
+	X5 : corners not correct
+
+'''
 import numpy as np
 import cv2
 import sys
@@ -44,6 +51,17 @@ class ChessBoard:
 	img = None
 	gray = None
 
+	blankBoard = None
+	fullBoard = None
+
+	blankBoardEdges = None
+	fullBoardEdges = None
+
+	# to save the pizel values of empty board
+	blankBoardMatrix = []
+
+	fullBoardMatrix = []
+
 	# List of all vertices that lie on border
 	OUTER_VERTICES = []
 
@@ -59,47 +77,20 @@ class ChessBoard:
 	WHITES = [(1,1),(1,4),(2,2),(5,5),(0,7)]
 	BLACKS = [(2,4),(6,1),(6,2),(7,7)]
 
-	def __init__(self, SourceFile, InitialVerticesCount, FinalVerticesCount = 150, Offset = 15):
+	def __init__(self, blankBoard, fullBoard, InitialVerticesCount, FinalVerticesCount = 150, Offset = 15):
 		
-		self.SOURCE_FILE = SourceFile
 		self.INITIAL_VERTICES_COUNT = InitialVerticesCount
-
-		self.img = cv2.imread(self.SOURCE_FILE)
-		
-
 		self.FINAL_VERTICES_COUNT = FinalVerticesCount
 		self.OFFSET = Offset
 
-		height = len(self.img)
-		width = len(self.img[0])
-		print (height,width)
+		self.blankBoard = cv2.imread(blankBoard)
+		self.fullBoard = cv2.imread(fullBoard)
+		
+		self.blankBoardEdges = cv2.Canny(self.blankBoard,0,100)
+		self.fullBoardEdges = cv2.Canny(self.fullBoard,0,100)
 
-		#self.img = self.img[10:height-10 , 120:590 ]
-
-		#self.gray = cv2.cvtColor(self.img,cv2.COLOR_BGR2GRAY)
-		#self.gray = self.sharpen(self.gray)
-
-		self.stock = self.img
-
-		edges = cv2.Canny(self.img,0,100)
-		self.gray = edges # cv2.cvtColor(edges,cv2.COLOR_BGR2GRAY)
-		plt.imshow(self.gray),plt.show()
-
-		# cropped = self.img[self.ALL_VERTICES[x][y][1]+5:self.ALL_VERTICES[x+1][y+1][1]-5 ,self.ALL_VERTICES[x][y][0]+5:self.ALL_VERTICES[x+1][y+1][0]-5]
-		# cropped = self.sharpen(cropped)
-
-		# forWhite = 120
-
-		# for p in self.img:
-		# 	for point in p:
-		# 		if point[0]>forWhite and point[1]>forWhite and point[2]>forWhite:
-		# 			point[0] = point[1] = point[2] = 255
-
-		# plt.imshow(self.img),plt.show()
-
-		self.process()
-
-		self.fixThresholds()
+		self.blankBoardMatrix = self.process(self.blankBoard, self.blankBoardEdges)
+		self.fullBoardMatrix = self.process(self.fullBoard, self.fullBoardEdges)
 
 	def sharpen(self,testImg):
 		#Create the identity filter, but with the 1 shifted to the right!
@@ -116,16 +107,18 @@ class ChessBoard:
 
 		return testImg
 
-	def process(self):
-		self.detectFourCorners()
-		self.plotFourCorners()
-		plt.imshow(self.img),plt.show()
-		self.plotOuterEdges()
-		self.displayFourEdges()
+	def process(self, testImg, testImgEdges):
+		self.detectFourCorners(testImgEdges)
+		self.plotFourCorners(testImg)
+		# plt.imshow(testImg),plt.show()
+		self.plotOuterEdges(testImg)
+		# plt.imshow(testImg),plt.show()
 		self.detectVerticesOnOuterEdges()
-		self.plotAllEdges()
-		self.detectAllVertices()
-		# self.displayAllEdges()
+		self.plotAllEdges(testImg)
+		# plt.imshow(testImg),plt.show()
+		self.detectAllVertices(testImg)
+		self.displayAllVertices(testImg)
+		return self.populate(testImg)
 
 	def update(self, SourceFile):
 		self.SOURCE_FILE = SourceFile
@@ -134,32 +127,34 @@ class ChessBoard:
 		self.process()
 		self.createTopology()
 
-	def detectFourCorners(self):
+	def detectFourCorners(self, testImgEdges):
 
-		INITIAL_VERTICES = cv2.goodFeaturesToTrack(self.gray,int(self.INITIAL_VERTICES_COUNT),0.03,10)
+		self.CORNERS = []
+
+		INITIAL_VERTICES = cv2.goodFeaturesToTrack(testImgEdges,int(self.INITIAL_VERTICES_COUNT),0.03,10)
 		INITIAL_VERTICES = np.int0(INITIAL_VERTICES)
 
 		vertices = []
 
-		tempImg = deepcopy(self.stock)
+		# tempImg = deepcopy(self.fullBoard)
 
-		print "="*20
+		# print "="*20
 
-		allDetectedPoints = []
+		# allDetectedPoints = []
 
 		for i in INITIAL_VERTICES:
 			x,y = i.ravel()
-			allDetectedPoints.append((x,y))
+			# allDetectedPoints.append((x,y))
 			vertices.append((x,y))
-			cv2.circle(tempImg,(x,y),3,self.GREEN,-1)
-		plt.imshow(tempImg),plt.show()
+			# cv2.circle(tempImg,(x,y),3,self.GREEN,-1)
+		# plt.imshow(tempImg),plt.show()
 
-		allDetectedPoints.sort()
+		# allDetectedPoints.sort()
 
-		for point in allDetectedPoints:
-			print point
+		# for point in allDetectedPoints:
+		# 	print point
 
-		print "="*20
+		# print "="*20
 
 		# Variables to store four corners of the board
 		bottom_left_x = self.INT_MAX
@@ -184,9 +179,9 @@ class ChessBoard:
 			minny = min(point[1],minny)
 			maxxy = max(point[1],maxxy)
 
-		print (minny,maxxy)
+		# print (minny,maxxy)
 
-		print "*"*20
+		# print "*"*20
 
 		for point in vertices:
 			if(point[1] >= minny - self.OFFSET and point[1] <= minny + self.OFFSET):
@@ -198,43 +193,44 @@ class ChessBoard:
 				if point[0] < top_left_x:
 					top_left_x,top_left_y = point[0],point[1]
 			if(point[1] >= maxxy - self.OFFSET and point[1] <= maxxy + self.OFFSET):
-				print point
+				# print point
 				if point[0] > bottom_right_x:
 					bottom_right_x,bottom_right_y = point[0],point[1]
 				if point[0] < bottom_left_x:
-					print point
+					# print point
 					bottom_left_x,bottom_left_y = point[0],point[1]
-					print bottom_left_x," ",bottom_left_y
+					# print bottom_left_x," ",bottom_left_y
 
-		print "*"*20
+		# print "*"*20
 
 		self.CORNERS.append((bottom_left_x,bottom_left_y))
 		self.CORNERS.append((top_left_x,top_left_y))
 		self.CORNERS.append((top_right_x,top_right_y))
 		self.CORNERS.append((bottom_right_x,bottom_right_y))
 
-	def plotFourCorners(self):
-		tempImg = self.img
+	def plotFourCorners(self, testImg):
+		tempImg = testImg
 		for point in self.CORNERS:
 			cv2.circle(tempImg,point,3,self.RED,-1)
 
-	def plotOuterEdges(self):
-		tempImg = self.img
+	def plotOuterEdges(self, testImg):
+		tempImg = testImg
 		for i in range(0,4):
 			cv2.line(tempImg, (self.CORNERS[i]), (self.CORNERS[(i+1)%4]), self.GREEN, 2 )
 
 	def detectVerticesOnOuterEdges(self):
+		self.OUTER_VERTICES = []
 		for i in range(0,4):
 			self.OUTER_VERTICES.append( Geometry.partitionLine((self.CORNERS[i]), (self.CORNERS[(i+1)%4]), self.FACTOR) )
 
-	def plotAllEdges(self):
+	def plotAllEdges(self, testImg):
 		for j in range(0,2):
 			for i in range(0,self.FACTOR+1):
-				cv2.line(self.img, (self.OUTER_VERTICES[j][i]) , (self.OUTER_VERTICES[j+2][self.FACTOR - i]), self.RED , 1)
+				cv2.line(testImg, (self.OUTER_VERTICES[j][i]) , (self.OUTER_VERTICES[j+2][self.FACTOR - i]), self.RED , 1)
 
-	def detectAllVertices(self):
+	def detectAllVertices(self, testImg):
 		# Detecting vertices on the newly constructed board
-		self.gray = cv2.cvtColor(self.img,cv2.COLOR_BGR2GRAY)
+		self.gray = cv2.cvtColor(testImg,cv2.COLOR_BGR2GRAY)
 
 		tempVertices = cv2.goodFeaturesToTrack(self.gray,int(self.FINAL_VERTICES_COUNT),0.01,10)
 		tempVertices = np.int0(tempVertices)
@@ -280,53 +276,114 @@ class ChessBoard:
 		# 2> it has a black piece
 		# 3> it has a white piece
 
-		print self.WHITE_THRESHOLD," ",self.BLACK_THRESHOLD
-
 		self.TOPOLOGY = [["." for x in range(self.FACTOR)] for x in range(self.FACTOR)]
 
-		for i in range(0,self.FACTOR):
-			for j in range(0,self.FACTOR):
-				filename = str(i)+str(j)+".jpg"
+		# for i in range(0,8):
+		# 	for j in range(0,8):
+		# 		print self.blankBoardMatrix[i][j];
 
-				cropped = self.img[self.ALL_VERTICES[i][j][1]+5:self.ALL_VERTICES[i+1][j+1][1]-5 ,self.ALL_VERTICES[i][j][0]+5:self.ALL_VERTICES[i+1][j+1][0]-5]
-				#cropped = img[matrix[i][j][1]:matrix[i+1][j+1][1] ,matrix[i][j][0]:matrix[i+1][j+1][0]]
-				cv2.imwrite(filename,cropped)
-				shutil.move(filename,"temp/"+filename)
-				
-				cropped = self.img[self.ALL_VERTICES[i][j][1]+5:self.ALL_VERTICES[i+1][j+1][1]-5 ,self.ALL_VERTICES[i][j][0]+5:self.ALL_VERTICES[i+1][j+1][0]-5]
-				cropped = self.sharpen(cropped)
+		# return;
+		
+		# plt.imshow(self.blankBoardMatrix[0][6]),plt.show()
+		# plt.imshow(self.fullBoardMatrix[0][6]),plt.show()
 
+		for i in range(0,8):
+			for j in range(0,8):
+				w = 0
+				b = 0
+				for x in range(0,10):
+					for y in range(0,10):
+						flagW = 1
+						flagB = 1
+						standardAvg = 0
+						thisAvg = 0
+						for l in range(0,3):
+							standardAvg += self.blankBoardMatrix[i][j][x][y][l]
+						for l in range(0,3):
+							thisAvg += self.fullBoardMatrix[i][j][x][y][l]
+						
 
-				height = len(cropped)
-				width = len(cropped[0])
+						if (i + j) % 2 == 0:
+							if standardAvg + 40 > thisAvg:
+								flagW = 0
+						else:
+							if standardAvg + 60 > thisAvg:
+								flagW = 0
 
-				width = int(width / 2)
-				height = int(height / 2)
+						if (i + j) % 2 != 0:
+							if standardAvg - 40 < thisAvg:
+								flagB = 0
+						else:
+							if standardAvg - 60 < thisAvg:
+								flagB = 0
 
-				c = 0
-				white = 0
-				black = 0
-				tot = 0
-
-				for x in range(height-self.OFFSET2,height+self.OFFSET2):
-					for y in range(width-self.OFFSET2, width+self.OFFSET2):
-						p = cropped[x][y]
-						c+=1
-						tot = tot + p[0] + p[1] + p[2]
-						if p[0]<=self.BLACK_THRESHOLD and p[1]<=self.BLACK_THRESHOLD and p[2]<=self.BLACK_THRESHOLD:
-							black+=1
-						if p[0]>=self.WHITE_THRESHOLD and p[1]>=self.WHITE_THRESHOLD and p[2]>=self.WHITE_THRESHOLD:
-							white+=1
-				probW = (white*1.0)/(c*1.0)
-				probB = (black*1.0)/(c*1.0)
-
-				# Probability of white piece and black piece at every cell
-				print i," ",j," ",int(probW*100)," ",int(probB*100)," ",int(tot/c)
-
-				if(probW >= self.PROBABILITY_THRESHOLD and probW > probB):
+						if flagB == flagW:
+							if flagB == 1:
+								a = 1
+								# print "True ConFlict at ", (i,j)
+							else:
+								a = 1
+								# print "False ConFlict at ", (i,j)
+						elif flagB == 1:
+							b += 1
+						else:
+							w += 1
+				print i, " ", j, " ", w, " ",b
+				if w > 30:
 					self.TOPOLOGY[i][j] = 'W'
-				elif probB >= self.PROBABILITY_THRESHOLD:
+				elif b > 30:
 					self.TOPOLOGY[i][j] = 'B'
+				else:
+					a = 1
+					# print "Conflict at ",(i,j)
+
+
+		# print self.WHITE_THRESHOLD," ",self.BLACK_THRESHOLD
+
+		
+		# for i in range(0,self.FACTOR):
+		# 	for j in range(0,self.FACTOR):
+		# 		filename = str(i)+str(j)+".jpg"
+
+		# 		cropped = self.img[self.ALL_VERTICES[i][j][1]+5:self.ALL_VERTICES[i+1][j+1][1]-5 ,self.ALL_VERTICES[i][j][0]+5:self.ALL_VERTICES[i+1][j+1][0]-5]
+		# 		#cropped = img[matrix[i][j][1]:matrix[i+1][j+1][1] ,matrix[i][j][0]:matrix[i+1][j+1][0]]
+		# 		cv2.imwrite(filename,cropped)
+		# 		shutil.move(filename,"temp/"+filename)
+				
+		# 		cropped = self.img[self.ALL_VERTICES[i][j][1]+5:self.ALL_VERTICES[i+1][j+1][1]-5 ,self.ALL_VERTICES[i][j][0]+5:self.ALL_VERTICES[i+1][j+1][0]-5]
+		# 		cropped = self.sharpen(cropped)
+
+
+		# 		height = len(cropped)
+		# 		width = len(cropped[0])
+
+		# 		width = int(width / 2)
+		# 		height = int(height / 2)
+
+		# 		c = 0
+		# 		white = 0
+		# 		black = 0
+		# 		tot = 0
+
+		# 		for x in range(height-self.OFFSET2,height+self.OFFSET2):
+		# 			for y in range(width-self.OFFSET2, width+self.OFFSET2):
+		# 				p = cropped[x][y]
+		# 				c+=1
+		# 				tot = tot + p[0] + p[1] + p[2]
+		# 				if p[0]<=self.BLACK_THRESHOLD and p[1]<=self.BLACK_THRESHOLD and p[2]<=self.BLACK_THRESHOLD:
+		# 					black+=1
+		# 				if p[0]>=self.WHITE_THRESHOLD and p[1]>=self.WHITE_THRESHOLD and p[2]>=self.WHITE_THRESHOLD:
+		# 					white+=1
+		# 		probW = (white*1.0)/(c*1.0)
+		# 		probB = (black*1.0)/(c*1.0)
+
+		# 		# Probability of white piece and black piece at every cell
+		# 		print i," ",j," ",int(probW*100)," ",int(probB*100)," ",int(tot/c)
+
+		# 		if(probW >= self.PROBABILITY_THRESHOLD and probW > probB):
+		# 			self.TOPOLOGY[i][j] = 'W'
+		# 		elif probB >= self.PROBABILITY_THRESHOLD:
+		# 			self.TOPOLOGY[i][j] = 'B'
 
 	def getFourCorners(self):
 		return self.CORNERS
@@ -356,8 +413,8 @@ class ChessBoard:
 				cv2.line(tempImg, (self.OUTER_VERTICES[j][i]) , (self.OUTER_VERTICES[j+2][self.FACTOR - i]), self.RED , 1)
 		plt.imshow(tempImg),plt.show()
 
-	def displayAllVertices(self):
-		tempImg = deepcopy(self.stock)
+	def displayAllVertices(self, testImg):
+		tempImg = deepcopy(testImg)
 		for i in range(0,self.FACTOR+1):
 			for j in range(0,self.FACTOR+1):
 				cv2.circle(tempImg,(self.ALL_VERTICES[i][j]),5,self.BLUE,-1)
@@ -368,6 +425,35 @@ class ChessBoard:
 			for j in range(0,self.FACTOR):
 				print self.TOPOLOGY[i][j],
 			print ""
+
+	def populate(self, testImg):
+		thisMatrix = [[[[(0) for x in range(10)] for x in range(10)] for x in range(self.FACTOR)] for x in range(self.FACTOR)]
+
+		tempImg = testImg
+		for x in range(0,self.FACTOR):
+			for y in range(0,self.FACTOR):
+				cropped = tempImg[self.ALL_VERTICES[x][y][1]+5:self.ALL_VERTICES[x+1][y+1][1]-5 ,self.ALL_VERTICES[x][y][0]+5:self.ALL_VERTICES[x+1][y+1][0]-5]
+				cropped = self.sharpen(cropped)
+
+				# plt.imshow(cropped),plt.show()
+
+				height = len(cropped)
+				width = len(cropped[0])
+
+				width = int(width / 2)
+				height = int(height / 2)
+
+				cropped = cropped[height-5:height+5, width-5:width+5]
+				cropped = self.sharpen(cropped)
+				thisMatrix[x][y] = cropped
+
+		# for x in range(0,self.FACTOR):
+		# 	for y in range(0,self.FACTOR):
+		# 		print thisMatrix[x][y]
+		# 		print "*"*10
+
+		return thisMatrix
+
 
 	def fixThresholds(self):
 		minn_brightness = self.INT_MAX
