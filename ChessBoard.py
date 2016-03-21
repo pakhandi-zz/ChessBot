@@ -30,36 +30,27 @@ class ChessBoard:
 	FINAL_VERTICES_COUNT = 150
 
 	# Amount of relaxation allowed in y-axis detection of corners
-	OFFSET = 15
+	OFFSET = 0
 
+	# Offset to decide number of pixels to consider for each cell
 	OFFSET2 = 5
-
-	# Threshold for white and black piece detection
-	WHITE_THRESHOLD = 142
-	BLACK_THRESHOLD = 80
-
-	# Threshold of probability for pieces
-	PROBABILITY_THRESHOLD = 0.01
-
-	# The location of the source file for image
-	SOURCE_FILE = None
 
 	# Number of vertices to be detected for initial detection of corners
 	INITIAL_VERTICES_COUNT = None
 
 	# The image to be processed and it's grayscale
-	img = None
 	gray = None
 
+	# The images of blank board and full board
 	blankBoard = None
 	fullBoard = None
 
+	# Images after edge detection
 	blankBoardEdges = None
 	fullBoardEdges = None
 
-	# to save the pizel values of empty board
+	# to save the pixel values of empty board and full board
 	blankBoardMatrix = []
-
 	fullBoardMatrix = []
 
 	# List of all vertices that lie on border
@@ -73,9 +64,6 @@ class ChessBoard:
 
 	# The topology after probability calculation
 	TOPOLOGY = []
-
-	WHITES = [(1,1),(1,4),(2,2),(5,5),(0,7)]
-	BLACKS = [(2,4),(6,1),(6,2),(7,7)]
 
 	def __init__(self, blankBoard, fullBoard, InitialVerticesCount, FinalVerticesCount = 150, Offset = 15):
 		
@@ -119,13 +107,6 @@ class ChessBoard:
 		self.detectAllVertices(testImg)
 		self.displayAllVertices(testImg)
 		return self.populate(testImg)
-
-	def update(self, SourceFile):
-		self.SOURCE_FILE = SourceFile
-		self.img = cv2.imread(self.SOURCE_FILE)
-		self.gray = cv2.cvtColor(self.img,cv2.COLOR_BGR2GRAY)
-		self.process()
-		self.createTopology()
 
 	def detectFourCorners(self, testImgEdges):
 
@@ -278,15 +259,6 @@ class ChessBoard:
 
 		self.TOPOLOGY = [["." for x in range(self.FACTOR)] for x in range(self.FACTOR)]
 
-		# for i in range(0,8):
-		# 	for j in range(0,8):
-		# 		print self.blankBoardMatrix[i][j];
-
-		# return;
-		
-		# plt.imshow(self.blankBoardMatrix[0][6]),plt.show()
-		# plt.imshow(self.fullBoardMatrix[0][6]),plt.show()
-
 		for i in range(0,8):
 			for j in range(0,8):
 				w = 0
@@ -337,54 +309,6 @@ class ChessBoard:
 					a = 1
 					# print "Conflict at ",(i,j)
 
-
-		# print self.WHITE_THRESHOLD," ",self.BLACK_THRESHOLD
-
-		
-		# for i in range(0,self.FACTOR):
-		# 	for j in range(0,self.FACTOR):
-		# 		filename = str(i)+str(j)+".jpg"
-
-		# 		cropped = self.img[self.ALL_VERTICES[i][j][1]+5:self.ALL_VERTICES[i+1][j+1][1]-5 ,self.ALL_VERTICES[i][j][0]+5:self.ALL_VERTICES[i+1][j+1][0]-5]
-		# 		#cropped = img[matrix[i][j][1]:matrix[i+1][j+1][1] ,matrix[i][j][0]:matrix[i+1][j+1][0]]
-		# 		cv2.imwrite(filename,cropped)
-		# 		shutil.move(filename,"temp/"+filename)
-				
-		# 		cropped = self.img[self.ALL_VERTICES[i][j][1]+5:self.ALL_VERTICES[i+1][j+1][1]-5 ,self.ALL_VERTICES[i][j][0]+5:self.ALL_VERTICES[i+1][j+1][0]-5]
-		# 		cropped = self.sharpen(cropped)
-
-
-		# 		height = len(cropped)
-		# 		width = len(cropped[0])
-
-		# 		width = int(width / 2)
-		# 		height = int(height / 2)
-
-		# 		c = 0
-		# 		white = 0
-		# 		black = 0
-		# 		tot = 0
-
-		# 		for x in range(height-self.OFFSET2,height+self.OFFSET2):
-		# 			for y in range(width-self.OFFSET2, width+self.OFFSET2):
-		# 				p = cropped[x][y]
-		# 				c+=1
-		# 				tot = tot + p[0] + p[1] + p[2]
-		# 				if p[0]<=self.BLACK_THRESHOLD and p[1]<=self.BLACK_THRESHOLD and p[2]<=self.BLACK_THRESHOLD:
-		# 					black+=1
-		# 				if p[0]>=self.WHITE_THRESHOLD and p[1]>=self.WHITE_THRESHOLD and p[2]>=self.WHITE_THRESHOLD:
-		# 					white+=1
-		# 		probW = (white*1.0)/(c*1.0)
-		# 		probB = (black*1.0)/(c*1.0)
-
-		# 		# Probability of white piece and black piece at every cell
-		# 		print i," ",j," ",int(probW*100)," ",int(probB*100)," ",int(tot/c)
-
-		# 		if(probW >= self.PROBABILITY_THRESHOLD and probW > probB):
-		# 			self.TOPOLOGY[i][j] = 'W'
-		# 		elif probB >= self.PROBABILITY_THRESHOLD:
-		# 			self.TOPOLOGY[i][j] = 'B'
-
 	def getFourCorners(self):
 		return self.CORNERS
 
@@ -394,20 +318,20 @@ class ChessBoard:
 	def getTopology(self):
 		return self.TOPOLOGY
 
-	def displayFourCorners(self):
-		tempImg = deepcopy(self.stock)
+	def displayFourCorners(self, testImg):
+		tempImg = deepcopy(testImg)
 		for point in self.CORNERS:
 			cv2.circle(tempImg,point,3,self.RED,-1)
 		plt.imshow(tempImg),plt.show()
 
-	def displayFourEdges(self):
-		tempImg = deepcopy(self.stock)
+	def displayFourEdges(self, testImg):
+		tempImg = deepcopy(testImg)
 		for i in range(0,4):
 			cv2.line(tempImg, (self.CORNERS[i]), (self.CORNERS[(i+1)%4]), self.GREEN, 2 )
 		plt.imshow(tempImg),plt.show()
 
-	def displayAllEdges(self):
-		tempImg = deepcopy(self.stock)
+	def displayAllEdges(self, testImg):
+		tempImg = deepcopy(testImg)
 		for j in range(0,2):
 			for i in range(0,self.FACTOR+1):
 				cv2.line(tempImg, (self.OUTER_VERTICES[j][i]) , (self.OUTER_VERTICES[j+2][self.FACTOR - i]), self.RED , 1)
@@ -447,38 +371,4 @@ class ChessBoard:
 				cropped = self.sharpen(cropped)
 				thisMatrix[x][y] = cropped
 
-		# for x in range(0,self.FACTOR):
-		# 	for y in range(0,self.FACTOR):
-		# 		print thisMatrix[x][y]
-		# 		print "*"*10
-
 		return thisMatrix
-
-
-	def fixThresholds(self):
-		minn_brightness = self.INT_MAX
-		maxx_brightness = 0
-		for x in range(0,self.FACTOR):
-			for y in range(0,self.FACTOR):
-				if (x,y) in self.WHITES:
-					continue
-				if (x,y) in self.BLACKS:
-					continue
-				cropped = self.img[self.ALL_VERTICES[x][y][1]+5:self.ALL_VERTICES[x+1][y+1][1]-5 ,self.ALL_VERTICES[x][y][0]+5:self.ALL_VERTICES[x+1][y+1][0]-5]
-				cropped = self.sharpen(cropped)
-
-				height = len(cropped)
-				width = len(cropped[0])
-
-				width = int(width / 2)
-				height = int(height / 2)
-
-				for i in range(height-self.OFFSET2,height+self.OFFSET2):
-					for j in range(width-self.OFFSET2,width+self.OFFSET2):
-						minn_brightness = min(minn_brightness,cropped[i][j][0],cropped[i][j][1], cropped[i][j][2])
-						maxx_brightness = max(maxx_brightness,cropped[i][j][0],cropped[i][j][1], cropped[i][j][2])
-
-				# print x," ",y," ",minn_brightness," ",maxx_brightness
-
-		self.WHITE_THRESHOLD = maxx_brightness 
-		self.BLACK_THRESHOLD = minn_brightness 
