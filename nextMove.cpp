@@ -37,9 +37,12 @@ using namespace std;
 #define fi first
 #define sec second
 
-const int LIMIT = 8;	
+const int LIMIT = 8;
+int MYPLAYER;	
 
 std::vector<string> inBoard;
+
+map<char,int> value;
 
 map<char,vector<pair<int,int> > > moves;
 vector<vector<int> > playerMatrix;
@@ -59,9 +62,123 @@ RNBQKBNR
 
 */
 
+bool isEmpty(int,int,vector<string>);
+
+bool canReach(pair<int,int> src, pair<int,int> dest, vector<string> board)
+{
+	int i;
+	if(board[src.first][src.second] == 'N' || board[src.first][src.second] == 'n')
+		return 1;
+	else if(src.first == dest.first)
+	{
+		if(dest.second < src.second)
+			swap(src,dest);
+
+		fl(i,src.second + 1,dest.second)
+		{
+			if(!isEmpty(src.first,i,board))
+				return 0;
+		}
+		return 1;
+	}
+	else if(src.second == dest.second)
+	{
+		if(dest.first < src.first)
+			swap(src,dest);
+
+		fl(i,src.first + 1,dest.first)
+		{
+			if(!isEmpty(i,src.second,board))
+				return 0;
+		}
+		return 1;
+	}
+	else if( (src.second - dest.second) / (src.first - dest.first) == 1 )
+	{
+		if(dest.first < src.first)
+			swap(src,dest);
+
+		src.first++;
+		src.second++;
+
+		if(src == dest)
+			return 1;
+
+		while(src != dest)
+		{
+			if(!isEmpty(src.first,src.second,board))
+				return 0;
+			src.first++;
+			src.second++;
+		}
+		return 1;
+	}
+	else
+	{
+		if(dest.first < src.first)
+			swap(src,dest);
+
+		src.first--;
+		src.second--;
+
+		if(src == dest)
+			return 1;
+
+		while(src != dest)
+		{
+			if(!isEmpty(src.first,src.second,board))
+				return 0;
+			src.first--;
+			src.second--;
+		}
+		return 1;
+	}
+}
+
+
+
+
+
 int evaluate(vector<string> mat)
 {
-	return 10;
+	value['r'] = value['R'] = 10;
+	value['n'] = value['N'] = 15;
+	value['b'] = value['B'] = 13;
+	value['q'] = value['Q'] = 30;
+	value['k'] = value['K'] = 500;
+	value['p'] = value['P'] = 5;
+
+	int i, j;
+
+	int ret = 0;
+
+	/*fl(i,0,LIMIT)
+	{
+		fl(j,0,LIMIT)
+		{
+			cout<<mat[i][j]<<" ";
+		}
+		nline;
+	}
+	cout<<"-----------------------"; nline;*/
+
+	fl(i,0,LIMIT)
+	{
+		fl(j,0,LIMIT)
+		{
+			if(!isEmpty(i,j,mat))
+			{
+				int val = value[mat[i][j]];
+
+				if( playerMatrix[i][j] == MYPLAYER )
+					ret += val;
+				else
+					ret -= val;
+			}
+		}
+	}
+
+	return ret;
 }
 
 void preprocessMoves()
@@ -155,7 +272,7 @@ int alphaBetaMax(int alpha, int beta, int depthLeft, int player, vector<string> 
 					int x = i + dx;
 					int y = j + dy;
 
-					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,board) ) )
+					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,board) ) && canReach(MP(i,j),MP(x,y),board) )
 					{
 						vector<string> temp = board;
 						temp[x][y] = temp[i][j];
@@ -202,7 +319,7 @@ int alphaBetaMin(int alpha, int beta, int depthLeft, int player, vector<string> 
 					int x = i + dx;
 					int y = j + dy;
 
-					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,board) ) )
+					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,board) ) && canReach(MP(i,j),MP(x,y),board) )
 					{
 						vector<string> temp = board;
 						temp[x][y] = temp[i][j];
@@ -233,6 +350,7 @@ int main()
 	{
 		playerMatrix[i].resize(LIMIT);
 	}
+	finalMove.resize(2);
 
 	fl(i,0,LIMIT)
 	{
@@ -255,18 +373,18 @@ int main()
 
 	int maxx = INT_MIN;
 
-	int player = 0;
+	MYPLAYER = 0;
 
 	int alpha = INT_MIN;
 	int beta = INT_MAX;
 
-	int depthLeft = 2;
+	int depthLeft = 4;
 
 	fl(i,0,LIMIT)
 	{
 		fl(j,0,LIMIT)
 		{
-			if(playerMatrix[i][j] == player)
+			if(playerMatrix[i][j] == MYPLAYER)
 			{
 				char thisPiece = inBoard[i][j];
 
@@ -280,19 +398,23 @@ int main()
 					int x = i + dx;
 					int y = j + dy;
 
-					if( isOnBoard(x,y) && ( isEmpty(x,y,inBoard) || !isSamePlayer(x,y,player,inBoard) ) )
+
+
+					if( isOnBoard(x,y) && ( isEmpty(x,y,inBoard) || !isSamePlayer(x,y,MYPLAYER,inBoard) ) && canReach(MP(i,j),MP(x,y),inBoard) )
 					{
+						
 						vector<string> temp = inBoard;
 						temp[x][y] = temp[i][j];
 						temp[i][j] = '.';
 
-						int score = alphaBetaMin(alpha, beta, depthLeft - 1, !player, temp);
+						int score = alphaBetaMin(alpha, beta, depthLeft - 1, !MYPLAYER, temp);
+						cout<<i<<" "<<j<<" : "<<x<<" "<<y<<" -> "<<score; nline;
 
 						if(score > maxx)
 						{
 							maxx = score;
-							finalMove.PB(MP(i,j));
-							finalMove.PB(MP(x,y));
+							finalMove[0] = (MP(i,j));
+							finalMove[1] = (MP(x,y));
 						}
 					}
 				}
