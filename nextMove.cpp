@@ -42,6 +42,9 @@ const int LIMIT = 8;
 std::vector<string> inBoard;
 
 map<char,vector<pair<int,int> > > moves;
+vector<vector<int> > playerMatrix;
+
+vector<pair<int,int> > finalMove;
 
 /*
 
@@ -51,7 +54,15 @@ pppppppp
 PPPPPPPP
 RNBQKBNR
 
+0 => white
+1 => black
+
 */
+
+int evaluate(vector<string> mat)
+{
+	return 10;
+}
 
 void preprocessMoves()
 {
@@ -99,18 +110,201 @@ void preprocessMoves()
 	moves['K'] = moves['k'];
 }
 
+bool isOnBoard(int x, int y)
+{
+	if(x<0 || x>=LIMIT || y<0 || y>=LIMIT)
+		return 0;
+	return 1;
+}
+
+bool isEmpty(int x, int y, vector<string> mat)
+{
+	if(mat[x][y] == '.')
+		return 1;
+	return 0;
+}
+
+bool isSamePlayer(int x, int y, int player, vector<string> mat)
+{
+	return player == mat[x][y];
+}
+
+int alphaBetaMin(int,int,int,int,vector<string>);
+
+int alphaBetaMax(int alpha, int beta, int depthLeft, int player, vector<string> board)
+{
+	if(depthLeft == 0) return evaluate(board);
+
+	int i, j, l;
+
+	fl(i,0,LIMIT)
+	{
+		fl(j,0,LIMIT)
+		{
+			if(playerMatrix[i][j] == player)
+			{
+				char thisPiece = inBoard[i][j];
+
+				int inLimit = moves[thisPiece].SZ();
+
+				fl(l,0,inLimit)
+				{
+					int dx = moves[thisPiece][l].first;
+					int dy = moves[thisPiece][l].second;
+
+					int x = i + dx;
+					int y = j + dy;
+
+					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,board) ) )
+					{
+						vector<string> temp = board;
+						temp[x][y] = temp[i][j];
+						temp[i][j] = '.';
+
+						int score = alphaBetaMin(alpha, beta, depthLeft - 1, !player, temp);
+
+						if( score >= beta )
+							return beta;   // fail hard beta-cutoff
+						if( score > alpha )
+							alpha = score; // alpha acts like max in MiniMax
+					}
+				}
+			}
+		}
+	}
+
+	return alpha;
+
+}
+
+
+int alphaBetaMin(int alpha, int beta, int depthLeft, int player, vector<string> board)
+{
+	if(depthLeft == 0) return -evaluate(board);
+
+	int i, j, l;
+
+	fl(i,0,LIMIT)
+	{
+		fl(j,0,LIMIT)
+		{
+			if(playerMatrix[i][j] == player)
+			{
+				char thisPiece = inBoard[i][j];
+
+				int inLimit = moves[thisPiece].SZ();
+
+				fl(l,0,inLimit)
+				{
+					int dx = moves[thisPiece][l].first;
+					int dy = moves[thisPiece][l].second;
+
+					int x = i + dx;
+					int y = j + dy;
+
+					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,board) ) )
+					{
+						vector<string> temp = board;
+						temp[x][y] = temp[i][j];
+						temp[i][j] = '.';
+
+						int score = alphaBetaMax(alpha, beta, depthLeft - 1, !player, temp);
+
+						if( score <= alpha )
+							return alpha;   // fail hard alpha-cutoff
+						if( score < beta )
+							beta = score; // alpha acts like min in MiniMax
+					}
+				}
+			}
+		}
+	}
+
+	return beta;
+
+}
+
 int main()
 {
-	int i, j;
+	int i, j, l;
+
+	playerMatrix.resize(LIMIT);
+	fl(i,0,LIMIT)
+	{
+		playerMatrix[i].resize(LIMIT);
+	}
 
 	fl(i,0,LIMIT)
 	{
 		string temp;
 		cin>>temp;
 		inBoard.PB(temp);
+
+		fl(j,0,LIMIT)
+		{
+			if( temp[j] >= 'A' && temp[j] <= 'Z' )
+				playerMatrix[i][j] = 0;
+			else if( temp[j] >= 'a' && temp[j] <= 'z' )
+				playerMatrix[i][j] = 1;
+			else
+				playerMatrix[i][j] = -1;
+		}
 	}
 
 	preprocessMoves();
+
+	int maxx = INT_MIN;
+
+	int player = 0;
+
+	int alpha = INT_MIN;
+	int beta = INT_MAX;
+
+	int depthLeft = 2;
+
+	fl(i,0,LIMIT)
+	{
+		fl(j,0,LIMIT)
+		{
+			if(playerMatrix[i][j] == player)
+			{
+				char thisPiece = inBoard[i][j];
+
+				int inLimit = moves[thisPiece].SZ();
+
+				fl(l,0,inLimit)
+				{
+					int dx = moves[thisPiece][l].first;
+					int dy = moves[thisPiece][l].second;
+
+					int x = i + dx;
+					int y = j + dy;
+
+					if( isOnBoard(x,y) && ( isEmpty(x,y,inBoard) || !isSamePlayer(x,y,player,inBoard) ) )
+					{
+						vector<string> temp = inBoard;
+						temp[x][y] = temp[i][j];
+						temp[i][j] = '.';
+
+						int score = alphaBetaMin(alpha, beta, depthLeft - 1, !player, temp);
+
+						if(score > maxx)
+						{
+							maxx = score;
+							finalMove.PB(MP(i,j));
+							finalMove.PB(MP(x,y));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	fl(i,0,2)
+	{
+		cout<<finalMove[i].first<<" "<<finalMove[i].second;
+		nline;
+	}
 
 
 	return 0;
