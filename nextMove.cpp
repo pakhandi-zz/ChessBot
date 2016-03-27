@@ -115,10 +115,10 @@ bool canReach(pair<int,int> src, pair<int,int> dest, vector<string> board)
 	}
 	else
 	{
-		if(dest.first < src.first)
+		if(dest.second > src.second)
 			swap(src,dest);
 
-		src.first--;
+		src.first++;
 		src.second--;
 
 		if(src == dest)
@@ -128,7 +128,7 @@ bool canReach(pair<int,int> src, pair<int,int> dest, vector<string> board)
 		{
 			if(!isEmpty(src.first,src.second,board))
 				return 0;
-			src.first--;
+			src.first++;
 			src.second--;
 		}
 		return 1;
@@ -136,7 +136,28 @@ bool canReach(pair<int,int> src, pair<int,int> dest, vector<string> board)
 }
 
 
+vector<vector<int> > getPlayerMatrix(vector<string> board)
+{
+	int i, j;
+	vector<vector<int> > ret;
+	ret.resize(LIMIT);
+	fl(i,0,LIMIT)
+		ret[i].resize(LIMIT);
 
+	fl(i,0,LIMIT)
+	{
+		fl(j,0,LIMIT)
+		{
+			if( board[i][j] >= 'A' && board[i][j] <= 'Z' )
+				ret[i][j] = 0;
+			else if( board[i][j] >= 'a' && board[i][j] <= 'z' )
+				ret[i][j] = 1;
+			else
+				ret[i][j] = -1;
+		}	
+	}
+	return ret;
+}
 
 
 int evaluate(vector<string> mat)
@@ -144,7 +165,7 @@ int evaluate(vector<string> mat)
 	value['r'] = value['R'] = 10;
 	value['n'] = value['N'] = 15;
 	value['b'] = value['B'] = 13;
-	value['q'] = value['Q'] = 30;
+	value['q'] = value['Q'] = 50;
 	value['k'] = value['K'] = 500;
 	value['p'] = value['P'] = 5;
 
@@ -159,8 +180,10 @@ int evaluate(vector<string> mat)
 			cout<<mat[i][j]<<" ";
 		}
 		nline;
-	}
-	cout<<"-----------------------"; nline;*/
+	}*/
+
+	vector<vector<int> > thisPlayerMatrix = getPlayerMatrix(mat);
+	
 
 	fl(i,0,LIMIT)
 	{
@@ -170,13 +193,16 @@ int evaluate(vector<string> mat)
 			{
 				int val = value[mat[i][j]];
 
-				if( playerMatrix[i][j] == MYPLAYER )
+				if( thisPlayerMatrix[i][j] == MYPLAYER )
 					ret += val;
 				else
 					ret -= val;
 			}
 		}
 	}
+
+	/*cout<<ret; nline;
+	cout<<"-----------------------"; nline;*/
 
 	return ret;
 }
@@ -252,15 +278,17 @@ int alphaBetaMax(int alpha, int beta, int depthLeft, int player, vector<string> 
 {
 	if(depthLeft == 0) return evaluate(board);
 
+	vector<vector<int> > thisPlayerMatrix = getPlayerMatrix(board);
+
 	int i, j, l;
 
 	fl(i,0,LIMIT)
 	{
 		fl(j,0,LIMIT)
 		{
-			if(playerMatrix[i][j] == player)
+			if(thisPlayerMatrix[i][j] == player)
 			{
-				char thisPiece = inBoard[i][j];
+				char thisPiece = board[i][j];
 
 				int inLimit = moves[thisPiece].SZ();
 
@@ -277,6 +305,8 @@ int alphaBetaMax(int alpha, int beta, int depthLeft, int player, vector<string> 
 						vector<string> temp = board;
 						temp[x][y] = temp[i][j];
 						temp[i][j] = '.';
+						
+						//cout<<i<<" "<<j<<" : "<<x<<" "<<y; nline;
 
 						int score = alphaBetaMin(alpha, beta, depthLeft - 1, !player, temp);
 
@@ -299,15 +329,17 @@ int alphaBetaMin(int alpha, int beta, int depthLeft, int player, vector<string> 
 {
 	if(depthLeft == 0) return -evaluate(board);
 
+	vector<vector<int> > thisPlayerMatrix = getPlayerMatrix(board);
+
 	int i, j, l;
 
 	fl(i,0,LIMIT)
 	{
 		fl(j,0,LIMIT)
 		{
-			if(playerMatrix[i][j] == player)
+			if(thisPlayerMatrix[i][j] == player)
 			{
-				char thisPiece = inBoard[i][j];
+				char thisPiece = board[i][j];
 
 				int inLimit = moves[thisPiece].SZ();
 
@@ -324,6 +356,8 @@ int alphaBetaMin(int alpha, int beta, int depthLeft, int player, vector<string> 
 						vector<string> temp = board;
 						temp[x][y] = temp[i][j];
 						temp[i][j] = '.';
+
+						//cout<<i<<" "<<j<<" : "<<x<<" "<<y; nline;
 
 						int score = alphaBetaMax(alpha, beta, depthLeft - 1, !player, temp);
 
@@ -406,7 +440,7 @@ int main()
 						vector<string> temp = inBoard;
 						temp[x][y] = temp[i][j];
 						temp[i][j] = '.';
-
+						//cout<<i<<" "<<j<<" : "<<x<<" "<<y; nline;
 						int score = alphaBetaMin(alpha, beta, depthLeft - 1, !MYPLAYER, temp);
 						cout<<i<<" "<<j<<" : "<<x<<" "<<y<<" -> "<<score; nline;
 
