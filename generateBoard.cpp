@@ -1,5 +1,12 @@
 //Author : Asim Krishna Prasad
 //
+/*
+
+	Program to generate the board given : 
+	1> Current player matrix
+	2> Previous board
+
+*/
 using namespace std;
 
 #include <bits/stdc++.h>
