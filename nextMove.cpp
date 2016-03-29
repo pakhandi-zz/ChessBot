@@ -212,7 +212,14 @@ void preprocessMoves()
 	int i;
 
 	moves['p'].PB(MP(-1,0));
+	moves['p'].PB(MP(-2,0));
+	moves['p'].PB(MP(+1,-1));
+	moves['p'].PB(MP(+1,+1));
+	
 	moves['P'].PB(MP(+1,0));
+	moves['P'].PB(MP(+2,0));
+	moves['P'].PB(MP(-1,-1));
+	moves['P'].PB(MP(-1,+1));
 
 	fl(i,1,LIMIT)
 	{
@@ -299,6 +306,22 @@ int alphaBetaMax(int alpha, int beta, int depthLeft, int player, vector<string> 
 
 					int x = i + dx;
 					int y = j + dy;
+					
+					if(thisPiece == 'P')
+					{
+						if(l == 3 && i != 6)
+							break;
+						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
+							break;
+					}
+					
+					if(thisPiece == 'p')
+					{
+						if(l == 3 && i != 1)
+							break;
+						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
+							break;
+					}
 
 					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,board) ) && canReach(MP(i,j),MP(x,y),board) )
 					{
@@ -350,6 +373,22 @@ int alphaBetaMin(int alpha, int beta, int depthLeft, int player, vector<string> 
 
 					int x = i + dx;
 					int y = j + dy;
+					
+					if(thisPiece == 'P')
+					{
+						if(l == 3 && i != 6)
+							break;
+						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
+							break;
+					}
+					
+					if(thisPiece == 'p')
+					{
+						if(l == 3 && i != 1)
+							break;
+						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
+							break;
+					}
 
 					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,board) ) && canReach(MP(i,j),MP(x,y),board) )
 					{
@@ -431,9 +470,23 @@ int main()
 
 					int x = i + dx;
 					int y = j + dy;
-
-
-
+					
+					if(thisPiece == 'P')
+					{
+						if(l == 3 && i != 6)
+							break;
+						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
+							break;
+					}
+					
+					if(thisPiece == 'p')
+					{
+						if(l == 3 && i != 1)
+							break;
+						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
+							break;
+					}
+					
 					if( isOnBoard(x,y) && ( isEmpty(x,y,inBoard) || !isSamePlayer(x,y,MYPLAYER,inBoard) ) && canReach(MP(i,j),MP(x,y),inBoard) )
 					{
 						
