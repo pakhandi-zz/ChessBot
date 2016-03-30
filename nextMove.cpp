@@ -211,15 +211,15 @@ void preprocessMoves()
 {
 	int i;
 
-	moves['p'].PB(MP(-1,0));
-	moves['p'].PB(MP(-2,0));
+	moves['p'].PB(MP(+1,0));
 	moves['p'].PB(MP(+1,-1));
 	moves['p'].PB(MP(+1,+1));
+	moves['p'].PB(MP(+2,0));
 	
-	moves['P'].PB(MP(+1,0));
-	moves['P'].PB(MP(+2,0));
+	moves['P'].PB(MP(-1,0));
 	moves['P'].PB(MP(-1,-1));
 	moves['P'].PB(MP(-1,+1));
+	moves['P'].PB(MP(-2,0));
 
 	fl(i,1,LIMIT)
 	{
@@ -274,7 +274,7 @@ bool isEmpty(int x, int y, vector<string> mat)
 	return 0;
 }
 
-bool isSamePlayer(int x, int y, int player, vector<string> mat)
+bool isSamePlayer(int x, int y, int player, vector<vector<int> > mat)
 {
 	return player == mat[x][y];
 }
@@ -307,23 +307,17 @@ int alphaBetaMax(int alpha, int beta, int depthLeft, int player, vector<string> 
 					int x = i + dx;
 					int y = j + dy;
 					
-					if(thisPiece == 'P')
+					if(thisPiece == 'P' || thisPiece == 'p')
 					{
+						if(l == 0 && !(isEmpty(x,y,board)) )
+							continue;
 						if(l == 3 && i != 6)
-							break;
-						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
-							break;
-					}
-					
-					if(thisPiece == 'p')
-					{
-						if(l == 3 && i != 1)
-							break;
-						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
-							break;
+							continue;
+						if( (l == 1 || l == 2) && isOnBoard(x,y) && (isEmpty(x,y,board) || (isSamePlayer(x,y,player,thisPlayerMatrix) ) ) )
+							continue;
 					}
 
-					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,board) ) && canReach(MP(i,j),MP(x,y),board) )
+					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,thisPlayerMatrix) ) && canReach(MP(i,j),MP(x,y),board) )
 					{
 						vector<string> temp = board;
 						temp[x][y] = temp[i][j];
@@ -374,23 +368,17 @@ int alphaBetaMin(int alpha, int beta, int depthLeft, int player, vector<string> 
 					int x = i + dx;
 					int y = j + dy;
 					
-					if(thisPiece == 'P')
+					if(thisPiece == 'P' || thisPiece == 'p')
 					{
+						if(l == 0 && !(isEmpty(x,y,board)) )
+							continue;
 						if(l == 3 && i != 6)
-							break;
-						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
-							break;
-					}
-					
-					if(thisPiece == 'p')
-					{
-						if(l == 3 && i != 1)
-							break;
-						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
-							break;
+							continue;
+						if( (l == 1 || l == 2) && isOnBoard(x,y) && (isEmpty(x,y,board) || (isSamePlayer(x,y,player,thisPlayerMatrix) ) ) )
+							continue;
 					}
 
-					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,board) ) && canReach(MP(i,j),MP(x,y),board) )
+					if( isOnBoard(x,y) && ( isEmpty(x,y,board) || !isSamePlayer(x,y,player,thisPlayerMatrix) ) && canReach(MP(i,j),MP(x,y),board) )
 					{
 						vector<string> temp = board;
 						temp[x][y] = temp[i][j];
@@ -424,6 +412,8 @@ int main()
 		playerMatrix[i].resize(LIMIT);
 	}
 	finalMove.resize(2);
+	
+	
 
 	fl(i,0,LIMIT)
 	{
@@ -441,8 +431,25 @@ int main()
 				playerMatrix[i][j] = -1;
 		}
 	}
+	
+	fl(i,0,LIMIT)
+	{
+		fl(j,0,LIMIT)
+		{
+			cout<<playerMatrix[i][j];
+		}
+		nline;
+	}
+	
+	//cout<<isEmpty(5,1,inBoard);
+	
+	//return 0;
+	
+	//cout<<isSamePlayer(7,0,0,playerMatrix); return 0;
 
 	preprocessMoves();
+	
+	cout<<moves['P'].SZ(); nline;
 
 	int maxx = INT_MIN;
 
@@ -471,23 +478,25 @@ int main()
 					int x = i + dx;
 					int y = j + dy;
 					
-					if(thisPiece == 'P')
+					if(thisPiece == 'P' || thisPiece == 'p')
 					{
+						if(l == 0 && !(isEmpty(x,y,inBoard)) )
+							continue;
 						if(l == 3 && i != 6)
-							break;
-						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
-							break;
+							continue;
+						if( (l == 1 || l == 2) && isOnBoard(x,y) && (isEmpty(x,y,inBoard) || (isSamePlayer(x,y,MYPLAYER,playerMatrix) ) ) )
+							continue;
 					}
 					
-					if(thisPiece == 'p')
+					/*if(thisPiece == 'p')
 					{
 						if(l == 3 && i != 1)
 							break;
-						if( (l == 1 || l == 2) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,inBoard)) )
+						if( (l == 1 || l == 2) && isOnBoard(x,y) && !isEmpty(x,y,inBoard) && !(isSamePlayer(x,y,MYPLAYER,playerMatrix)) )
 							break;
-					}
+					}*/
 					
-					if( isOnBoard(x,y) && ( isEmpty(x,y,inBoard) || !isSamePlayer(x,y,MYPLAYER,inBoard) ) && canReach(MP(i,j),MP(x,y),inBoard) )
+					if( isOnBoard(x,y) && ( isEmpty(x,y,inBoard) || !isSamePlayer(x,y,MYPLAYER,playerMatrix) ) && canReach(MP(i,j),MP(x,y),inBoard) )
 					{
 						
 						vector<string> temp = inBoard;
@@ -521,3 +530,4 @@ int main()
 /*
 	Powered by Buggy Plugin
 */
+

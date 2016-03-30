@@ -2,7 +2,7 @@ import sys
 import ChessBoard
 
 if len(sys.argv) != 4:
-	print "Correct Usage : python chess_board.py <SourceFilename> <NumberOfInitialVertices>"
+	print "Correct Usage : python chess_board.py <BlankBoardFilename> <SourceFilename> <NumberOfInitialVertices>"
 	exit()
 
 blankFilename = sys.argv[1]
