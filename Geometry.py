@@ -1,3 +1,10 @@
+'''
+	Author : Asim Krishna Prasad
+
+	Aim :
+		1> Basic geometry functions to assist ChessBoard.py
+'''
+
 from math import *
 
 # Function to get distance between two points in 2-D plane

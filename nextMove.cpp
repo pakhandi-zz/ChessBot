@@ -1,5 +1,11 @@
-//Author : Asim Krishna Prasad
-//
+/*
+	Author : Asim Krishna Prasad
+
+	Aim :
+		1> Take a board matrix and player as input
+		2> Output the best possible move
+
+*/
 using namespace std;
 
 #include<bits/stdc++.h>
@@ -431,15 +437,17 @@ int main()
 				playerMatrix[i][j] = -1;
 		}
 	}
+
+	cin>>MYPLAYER;
 	
-	fl(i,0,LIMIT)
+	/*fl(i,0,LIMIT)
 	{
 		fl(j,0,LIMIT)
 		{
 			cout<<playerMatrix[i][j];
 		}
 		nline;
-	}
+	}*/
 	
 	//cout<<isEmpty(5,1,inBoard);
 	
@@ -449,11 +457,9 @@ int main()
 
 	preprocessMoves();
 	
-	cout<<moves['P'].SZ(); nline;
+	//cout<<moves['P'].SZ(); nline;
 
 	int maxx = INT_MIN;
-
-	MYPLAYER = 0;
 
 	int alpha = INT_MIN;
 	int beta = INT_MAX;
@@ -504,7 +510,7 @@ int main()
 						temp[i][j] = '.';
 						//cout<<i<<" "<<j<<" : "<<x<<" "<<y; nline;
 						int score = alphaBetaMin(alpha, beta, depthLeft - 1, !MYPLAYER, temp);
-						cout<<i<<" "<<j<<" : "<<x<<" "<<y<<" -> "<<score; nline;
+						//cout<<i<<" "<<j<<" : "<<x<<" "<<y<<" -> "<<score; nline;
 
 						if(score > maxx)
 						{

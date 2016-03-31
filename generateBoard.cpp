@@ -1,10 +1,9 @@
-//Author : Asim Krishna Prasad
-//
 /*
+	Author : Asim Krishna Prasad
 
-	Program to generate the board given : 
-	1> Current player matrix
-	2> Previous board
+	Aim :
+		1> Generate the current board matrix using current player matrix and 
+			previous board matrix
 
 */
 using namespace std;

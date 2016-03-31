@@ -1,4 +1,14 @@
 '''
+	Author : Asim Krishna Prasad
+
+	Aim : 
+		1> Take image of blank board
+		2> Identify the board
+		3> Separate each cell
+		4> Fix threshold for each cell
+		5> Take another board
+		6> Predict the color of piece on each cell if not empty
+		7> Return the current player matrix
 
 	Gives correct output for X2, X3, X4, X6, X7
 	X1 : One cell error
