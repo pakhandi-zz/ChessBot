@@ -310,7 +310,7 @@ class ChessBoard:
 							b += 1
 						else:
 							w += 1
-				print i, " ", j, " ", w, " ",b
+				# print i, " ", j, " ", w, " ",b
 				if w > 30:
 					self.TOPOLOGY[i][j] = 'W'
 				elif b > 30:
@@ -357,7 +357,8 @@ class ChessBoard:
 	def displayTopology(self):
 		for i in range(0,self.FACTOR):
 			for j in range(0,self.FACTOR):
-				print self.TOPOLOGY[i][j],
+				sys.stdout.write(self.TOPOLOGY[i][j])
+				#print self.TOPOLOGY[i][j],""
 			print ""
 
 	def populate(self, testImg):
