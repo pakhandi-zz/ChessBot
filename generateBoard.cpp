@@ -68,6 +68,8 @@ int main()
 		prevBoard.PB(temp);
 	}
 
+	bool doBreak = 0;
+
 	fl(i,0,LIMIT)
 	{
 		fl(j,0,LIMIT)
@@ -75,11 +77,17 @@ int main()
 			if( playerMatrix[i][j] == '.' && prevBoard[i][j] != '.' )
 			{
 				pieceLifted = prevBoard[i][j];
+				//cout<<pieceLifted<<" "<<i<<" "<<j; nline;
 				prevBoard[i][j] = '.';
+				doBreak = 1;
 				break;
 			}
 		}
+		if(doBreak)
+			break;
 	}
+	
+	doBreak = 0;
 
 	fl(i,0,LIMIT)
 	{
@@ -88,9 +96,12 @@ int main()
 			if( playerMatrix[i][j] != '.' && prevBoard[i][j] == '.' )
 			{
 				prevBoard[i][j] = pieceLifted;
+				doBreak = 1;
 				break;
 			}
 		}
+		if(doBreak)
+			break;
 	}
 
 	fl(i,0,LIMIT)
