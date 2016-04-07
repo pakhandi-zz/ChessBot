@@ -530,6 +530,19 @@ int main()
 		nline;
 	}
 
+	inBoard[finalMove[1].first][finalMove[1].second] = inBoard[finalMove[0].first][finalMove[0].second];
+	inBoard[finalMove[0].first][finalMove[0].second] = '.';
+
+	freopen("prevBoard", "w", stdout);
+
+	fl(i,0,LIMIT)
+	{
+		fl(j,0,LIMIT)
+		{
+			cout<<inBoard[i][j];
+		}
+		nline;
+	}
 
 	return 0;
 }
