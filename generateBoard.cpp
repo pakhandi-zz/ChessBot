@@ -74,7 +74,7 @@ int main()
 	{
 		fl(j,0,LIMIT)
 		{
-			if( playerMatrix[i][j] == '.' && prevBoard[i][j] != '.' )
+			if( playerMatrix[i][j] == '.' && prevBoard[i][j] != '.' && islower(prevBoard[i][j]))
 			{
 				pieceLifted = prevBoard[i][j];
 				//cout<<pieceLifted<<" "<<i<<" "<<j; nline;

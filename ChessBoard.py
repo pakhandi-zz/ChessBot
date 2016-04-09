@@ -23,6 +23,7 @@ from math import *
 import shutil
 import Geometry
 from copy import deepcopy
+from PIL import Image
 
 class ChessBoard:
 	# Colors
@@ -75,6 +76,10 @@ class ChessBoard:
 	# The topology after probability calculation
 	TOPOLOGY = []
 
+	# name of the files
+	blankName = "blankBoard"
+	fullName = "fullBoard"
+
 	def __init__(self, blankBoard, fullBoard, InitialVerticesCount, FinalVerticesCount = 150, Offset = 15):
 		
 		self.INITIAL_VERTICES_COUNT = InitialVerticesCount
@@ -88,8 +93,8 @@ class ChessBoard:
 		self.fullBoardEdges = cv2.Canny(self.fullBoard,0,100)
 
 		self.detectFourCorners(self.blankBoardEdges)
-		self.blankBoardMatrix = self.process(self.blankBoard, self.blankBoardEdges)
-		self.fullBoardMatrix = self.process(self.fullBoard, self.fullBoardEdges)
+		self.blankBoardMatrix = self.process(self.blankBoard, self.blankBoardEdges, self.blankName)
+		self.fullBoardMatrix = self.process(self.fullBoard, self.fullBoardEdges,self.fullName)
 
 	def sharpen(self,testImg):
 		#Create the identity filter, but with the 1 shifted to the right!
@@ -106,7 +111,7 @@ class ChessBoard:
 
 		return testImg
 
-	def process(self, testImg, testImgEdges):
+	def process(self, testImg, testImgEdges, folderName):
 		# self.detectFourCorners(testImgEdges)
 		self.plotFourCorners(testImg)
 		# plt.imshow(testImg),plt.show()
@@ -117,7 +122,8 @@ class ChessBoard:
 		# plt.imshow(testImg),plt.show()
 		self.detectAllVertices(testImg)
 		self.displayAllVertices(testImg)
-		return self.populate(testImg)
+		# print folderName
+		return self.populate(testImg, folderName)
 
 	def detectFourCorners(self, testImgEdges):
 
@@ -270,55 +276,104 @@ class ChessBoard:
 
 		self.TOPOLOGY = [["." for x in range(self.FACTOR)] for x in range(self.FACTOR)]
 
-		for i in range(0,8):
-			for j in range(0,8):
-				w = 0
-				b = 0
-				for x in range(0,10):
-					for y in range(0,10):
-						flagW = 1
-						flagB = 1
-						standardAvg = 0
-						thisAvg = 0
-						for l in range(0,3):
-							standardAvg += self.blankBoardMatrix[i][j][x][y][l]
-						for l in range(0,3):
-							thisAvg += self.fullBoardMatrix[i][j][x][y][l]
+
+		blank = []
+		full = []
+
+		for i in xrange(8):
+			for j in xrange(8):
+				img = Image.open("blankBoard/" + str(i) + str(j) + ".jpg")
+				img = img.convert("L")
+				clrs = img.getcolors()
+				for ind in xrange(len(clrs)):
+					clrs[ind] = (clrs[ind][1], clrs[ind][0])
+				clrs.sort(reverse = True)
+
+				print clrs
+				blank.append( (clrs[0][0] + clrs[1][0] + clrs[2][0] )  / 3 )
+				# if sum(img.convert("L").getextrema()) in (0, 2):
+				# 	print str(i) + str(j)
+
+		print "$" * 30
+
+		for i in xrange(8):
+			for j in xrange(8):
+				img = Image.open("fullBoard/" + str(i) + str(j) + ".jpg")
+				img = img.convert("L")
+				clrs = img.getcolors()
+				clrs.sort(reverse = True)
+				for ind in xrange(len(clrs)):
+					clrs[ind] = (clrs[ind][1], clrs[ind][0])
+				print clrs
+				full.append( (clrs[0][0] + clrs[1][0] + clrs[2][0] )  / 3 )
+
+		for i in xrange(len(full)):
+			print full[i], " ", blank[i] 
+			if (i / 8) <= 3:
+				thisOffset = 10
+			elif (i / 8) <= 5:
+				thisOffset = 5
+			else:
+				thisOffset = 2
+			if abs(full[i] - blank[i]) >= thisOffset:
+				x = i / 8
+				y = i % 8
+				self.TOPOLOGY[x][y] = 'W'
+
+				if(full[i] < blank[i]):
+					self.TOPOLOGY[x][y] = 'B'
+
+		return
+
+		# for i in range(0,8):
+		# 	for j in range(0,8):
+		# 		w = 0
+		# 		b = 0
+		# 		for x in range(0,10):
+		# 			for y in range(0,10):
+		# 				flagW = 1
+		# 				flagB = 1
+		# 				standardAvg = 0
+		# 				thisAvg = 0
+		# 				for l in range(0,3):
+		# 					standardAvg += self.blankBoardMatrix[i][j][x][y][l]
+		# 				for l in range(0,3):
+		# 					thisAvg += self.fullBoardMatrix[i][j][x][y][l]
 						
 
-						if (i + j) % 2 == 0:
-							if standardAvg + 40 > thisAvg:
-								flagW = 0
-						else:
-							if standardAvg + 60 > thisAvg:
-								flagW = 0
+		# 				if (i + j) % 2 == 0:
+		# 					if standardAvg + 40 > thisAvg:
+		# 						flagW = 0
+		# 				else:
+		# 					if standardAvg + 60 > thisAvg:
+		# 						flagW = 0
 
-						if (i + j) % 2 != 0:
-							if standardAvg - 40 < thisAvg:
-								flagB = 0
-						else:
-							if standardAvg - 60 < thisAvg:
-								flagB = 0
+		# 				if (i + j) % 2 != 0:
+		# 					if standardAvg - 40 < thisAvg:
+		# 						flagB = 0
+		# 				else:
+		# 					if standardAvg - 60 < thisAvg:
+		# 						flagB = 0
 
-						if flagB == flagW:
-							if flagB == 1:
-								a = 1
-								# print "True ConFlict at ", (i,j)
-							else:
-								a = 1
-								# print "False ConFlict at ", (i,j)
-						elif flagB == 1:
-							b += 1
-						else:
-							w += 1
-				# print i, " ", j, " ", w, " ",b
-				if w > 30:
-					self.TOPOLOGY[i][j] = 'W'
-				elif b > 30:
-					self.TOPOLOGY[i][j] = 'B'
-				else:
-					a = 1
-					# print "Conflict at ",(i,j)
+		# 				if flagB == flagW:
+		# 					if flagB == 1:
+		# 						a = 1
+		# 						# print "True ConFlict at ", (i,j)
+		# 					else:
+		# 						a = 1
+		# 						# print "False ConFlict at ", (i,j)
+		# 				elif flagB == 1:
+		# 					b += 1
+		# 				else:
+		# 					w += 1
+		# 		# print i, " ", j, " ", w, " ",b
+		# 		if w > 30:
+		# 			self.TOPOLOGY[i][j] = 'W'
+		# 		elif b > 30:
+		# 			self.TOPOLOGY[i][j] = 'B'
+		# 		else:
+		# 			a = 1
+		# 			# print "Conflict at ",(i,j)
 
 	def getFourCorners(self):
 		return self.CORNERS
@@ -362,10 +417,10 @@ class ChessBoard:
 				#print self.TOPOLOGY[i][j],""
 			print ""
 
-	def populate(self, testImg):
+	def populate(self, testImg, folderName):
 		thisMatrix = [[[[(0) for x in range(10)] for x in range(10)] for x in range(self.FACTOR)] for x in range(self.FACTOR)]
-
 		tempImg = testImg
+		# print folderName
 		for x in range(0,self.FACTOR):
 			for y in range(0,self.FACTOR):
 				cropped = tempImg[self.ALL_VERTICES[x][y][1]+5:self.ALL_VERTICES[x+1][y+1][1]-5 ,self.ALL_VERTICES[x][y][0]+5:self.ALL_VERTICES[x+1][y+1][0]-5]
@@ -382,5 +437,10 @@ class ChessBoard:
 				cropped = cropped[height-5:height+5, width-5:width+5]
 				cropped = self.sharpen(cropped)
 				thisMatrix[x][y] = cropped
+
+				filename = str(x) + str(y) + ".jpg"
+
+				cv2.imwrite(filename,cropped)
+				shutil.move(filename,folderName+"/"+filename)
 
 		return thisMatrix
