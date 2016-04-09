@@ -121,7 +121,7 @@ class ChessBoard:
 		self.plotAllEdges(testImg)
 		# plt.imshow(testImg),plt.show()
 		self.detectAllVertices(testImg)
-		self.displayAllVertices(testImg)
+		# self.displayAllVertices(testImg)
 		# print folderName
 		return self.populate(testImg, folderName)
 
@@ -289,12 +289,12 @@ class ChessBoard:
 					clrs[ind] = (clrs[ind][1], clrs[ind][0])
 				clrs.sort(reverse = True)
 
-				print clrs
+				# print clrs
 				blank.append( (clrs[0][0] + clrs[1][0] + clrs[2][0] )  / 3 )
 				# if sum(img.convert("L").getextrema()) in (0, 2):
 				# 	print str(i) + str(j)
 
-		print "$" * 30
+		# print "$" * 30
 
 		for i in xrange(8):
 			for j in xrange(8):
@@ -304,17 +304,18 @@ class ChessBoard:
 				clrs.sort(reverse = True)
 				for ind in xrange(len(clrs)):
 					clrs[ind] = (clrs[ind][1], clrs[ind][0])
-				print clrs
+				# print clrs
 				full.append( (clrs[0][0] + clrs[1][0] + clrs[2][0] )  / 3 )
 
 		for i in xrange(len(full)):
-			print full[i], " ", blank[i] 
-			if (i / 8) <= 3:
-				thisOffset = 10
-			elif (i / 8) <= 5:
-				thisOffset = 5
-			else:
-				thisOffset = 2
+			thisOffset = 20
+			# print full[i], " ", blank[i] 
+			# if (i / 8) <= 3:
+			# 	thisOffset = 10
+			# elif (i / 8) <= 5:
+			# 	thisOffset = 5
+			# else:
+			# 	thisOffset = 2
 			if abs(full[i] - blank[i]) >= thisOffset:
 				x = i / 8
 				y = i % 8
@@ -324,56 +325,6 @@ class ChessBoard:
 					self.TOPOLOGY[x][y] = 'B'
 
 		return
-
-		# for i in range(0,8):
-		# 	for j in range(0,8):
-		# 		w = 0
-		# 		b = 0
-		# 		for x in range(0,10):
-		# 			for y in range(0,10):
-		# 				flagW = 1
-		# 				flagB = 1
-		# 				standardAvg = 0
-		# 				thisAvg = 0
-		# 				for l in range(0,3):
-		# 					standardAvg += self.blankBoardMatrix[i][j][x][y][l]
-		# 				for l in range(0,3):
-		# 					thisAvg += self.fullBoardMatrix[i][j][x][y][l]
-						
-
-		# 				if (i + j) % 2 == 0:
-		# 					if standardAvg + 40 > thisAvg:
-		# 						flagW = 0
-		# 				else:
-		# 					if standardAvg + 60 > thisAvg:
-		# 						flagW = 0
-
-		# 				if (i + j) % 2 != 0:
-		# 					if standardAvg - 40 < thisAvg:
-		# 						flagB = 0
-		# 				else:
-		# 					if standardAvg - 60 < thisAvg:
-		# 						flagB = 0
-
-		# 				if flagB == flagW:
-		# 					if flagB == 1:
-		# 						a = 1
-		# 						# print "True ConFlict at ", (i,j)
-		# 					else:
-		# 						a = 1
-		# 						# print "False ConFlict at ", (i,j)
-		# 				elif flagB == 1:
-		# 					b += 1
-		# 				else:
-		# 					w += 1
-		# 		# print i, " ", j, " ", w, " ",b
-		# 		if w > 30:
-		# 			self.TOPOLOGY[i][j] = 'W'
-		# 		elif b > 30:
-		# 			self.TOPOLOGY[i][j] = 'B'
-		# 		else:
-		# 			a = 1
-		# 			# print "Conflict at ",(i,j)
 
 	def getFourCorners(self):
 		return self.CORNERS

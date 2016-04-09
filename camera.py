@@ -17,7 +17,7 @@ if len(sys.argv) != 2:
 filename = sys.argv[1] + ".jpg"
 
 # 1 => to use secondary (USB) web camera
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 while(True):
 	# Capture frame-by-frame
@@ -28,6 +28,13 @@ while(True):
 
 	# Display the resulting frame
 	cv2.imshow('frame',frame)
+
+	# for auto click
+	cv2.imwrite(filename,frame)
+	if not os.path.exists("img/"):
+		os.makedirs("img/")
+	shutil.move(filename,"img/"+filename)
+	break
 
 	#Save the frame and quit on 'q'
 	if cv2.waitKey(1) & 0xFF == ord('q'):

@@ -172,7 +172,7 @@ int evaluate(vector<string> mat)
 	value['n'] = value['N'] = 15;
 	value['b'] = value['B'] = 13;
 	value['q'] = value['Q'] = 50;
-	value['k'] = value['K'] = 500;
+	value['k'] = value['K'] = 1000;
 	value['p'] = value['P'] = 5;
 
 	int i, j;
@@ -488,7 +488,7 @@ int main()
 					{
 						if(l == 0 && !(isEmpty(x,y,inBoard)) )
 							continue;
-						if(l == 3 && i != 6)
+						if(l == 3 && (i != 6 || !(isEmpty(x,y,inBoard) ) ) )
 							continue;
 						if( (l == 1 || l == 2) && isOnBoard(x,y) && (isEmpty(x,y,inBoard) || (isSamePlayer(x,y,MYPLAYER,playerMatrix) ) ) )
 							continue;
@@ -533,7 +533,7 @@ int main()
 	inBoard[finalMove[1].first][finalMove[1].second] = inBoard[finalMove[0].first][finalMove[0].second];
 	inBoard[finalMove[0].first][finalMove[0].second] = '.';
 
-	freopen("prevBoard", "w", stdout);
+	freopen("prevBoard.txt", "w", stdout);
 
 	fl(i,0,LIMIT)
 	{

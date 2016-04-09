@@ -2,8 +2,7 @@
 	Author : Asim Krishna Prasad
 
 	Aim :
-		1> Generate the current board matrix using current player matrix and 
-			previous board matrix
+		1> To rotate the input board by 90-degrees clockwise
 
 */
 using namespace std;
@@ -45,12 +44,14 @@ using namespace std;
 
 const int LIMIT = 8;
 
-vector<string> playerMatrix, prevBoard;
+vector<string> playerMatrix, rotatedBoard;
 char pieceLifted;
 
 int main()
 {
 	int i, j, l;
+
+	freopen("thisPlayerMatrix", "r", stdin);
 
 	fl(i,0,LIMIT)
 	{
@@ -59,58 +60,22 @@ int main()
 		playerMatrix.PB(temp);
 	}
 
-	freopen("prevBoard.txt", "r", stdin);
-
 	fl(i,0,LIMIT)
 	{
-		string temp;
-		cin>>temp;
-		prevBoard.PB(temp);
-	}
-
-	bool doBreak = 0;
-
-	fl(i,0,LIMIT)
-	{
+		string temp = "";
 		fl(j,0,LIMIT)
 		{
-			if( playerMatrix[i][j] == '.' && prevBoard[i][j] != '.' && islower(prevBoard[i][j]))
-			{
-				pieceLifted = prevBoard[i][j];
-				//cout<<pieceLifted<<" "<<i<<" "<<j; nline;
-				prevBoard[i][j] = '.';
-				doBreak = 1;
-				break;
-			}
+			temp += playerMatrix[j][i];
 		}
-		if(doBreak)
-			break;
+		//cout<<temp; nline;
+		rotatedBoard.PB(temp);
 	}
-	
-	doBreak = 0;
 
 	fl(i,0,LIMIT)
 	{
 		fl(j,0,LIMIT)
 		{
-			if( playerMatrix[i][j] == 'B' && (prevBoard[i][j] == '.' || isupper(prevBoard[i][j]) ) )
-			{
-				prevBoard[i][j] = pieceLifted;
-				doBreak = 1;
-				break;
-			}
-		}
-		if(doBreak)
-			break;
-	}
-
-	freopen("tempFile.txt", "w", stdout);
-
-	fl(i,0,LIMIT)
-	{
-		fl(j,0,LIMIT)
-		{
-			cout<<prevBoard[i][j];
+			cout<<rotatedBoard[i][j];
 		}
 		nline;
 	}
