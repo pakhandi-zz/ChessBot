@@ -87,6 +87,7 @@ class ChessBoard:
 		self.blankBoardEdges = cv2.Canny(self.blankBoard,0,100)
 		self.fullBoardEdges = cv2.Canny(self.fullBoard,0,100)
 
+		self.detectFourCorners(self.blankBoardEdges)
 		self.blankBoardMatrix = self.process(self.blankBoard, self.blankBoardEdges)
 		self.fullBoardMatrix = self.process(self.fullBoard, self.fullBoardEdges)
 
@@ -106,7 +107,7 @@ class ChessBoard:
 		return testImg
 
 	def process(self, testImg, testImgEdges):
-		self.detectFourCorners(testImgEdges)
+		# self.detectFourCorners(testImgEdges)
 		self.plotFourCorners(testImg)
 		# plt.imshow(testImg),plt.show()
 		self.plotOuterEdges(testImg)
