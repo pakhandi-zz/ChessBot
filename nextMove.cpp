@@ -315,11 +315,12 @@ int alphaBetaMax(int alpha, int beta, int depthLeft, int player, vector<string> 
 					
 					if(thisPiece == 'P' || thisPiece == 'p')
 					{
-						if(l == 0 && !(isEmpty(x,y,board)) )
+						int pos = thisPiece == 'P'? 6 : 1;
+						if(l == 0 && !(isEmpty(x,y,inBoard)) )
 							continue;
-						if(l == 3 && i != 6)
+						if(l == 3 && (i != pos || !(isEmpty(x,y,inBoard) ) ) )
 							continue;
-						if( (l == 1 || l == 2) && isOnBoard(x,y) && (isEmpty(x,y,board) || (isSamePlayer(x,y,player,thisPlayerMatrix) ) ) )
+						if( (l == 1 || l == 2) && isOnBoard(x,y) && (isEmpty(x,y,inBoard) || (isSamePlayer(x,y,MYPLAYER,playerMatrix) ) ) )
 							continue;
 					}
 
@@ -376,11 +377,12 @@ int alphaBetaMin(int alpha, int beta, int depthLeft, int player, vector<string> 
 					
 					if(thisPiece == 'P' || thisPiece == 'p')
 					{
-						if(l == 0 && !(isEmpty(x,y,board)) )
+						int pos = thisPiece == 'P'? 6 : 1;
+						if(l == 0 && !(isEmpty(x,y,inBoard)) )
 							continue;
-						if(l == 3 && i != 6)
+						if(l == 3 && (i != pos || !(isEmpty(x,y,inBoard) ) ) )
 							continue;
-						if( (l == 1 || l == 2) && isOnBoard(x,y) && (isEmpty(x,y,board) || (isSamePlayer(x,y,player,thisPlayerMatrix) ) ) )
+						if( (l == 1 || l == 2) && isOnBoard(x,y) && (isEmpty(x,y,inBoard) || (isSamePlayer(x,y,MYPLAYER,playerMatrix) ) ) )
 							continue;
 					}
 
@@ -486,9 +488,10 @@ int main()
 					
 					if(thisPiece == 'P' || thisPiece == 'p')
 					{
+						int pos = thisPiece == 'P'? 6 : 1;
 						if(l == 0 && !(isEmpty(x,y,inBoard)) )
 							continue;
-						if(l == 3 && (i != 6 || !(isEmpty(x,y,inBoard) ) ) )
+						if(l == 3 && (i != pos || !(isEmpty(x,y,inBoard) ) ) )
 							continue;
 						if( (l == 1 || l == 2) && isOnBoard(x,y) && (isEmpty(x,y,inBoard) || (isSamePlayer(x,y,MYPLAYER,playerMatrix) ) ) )
 							continue;
