@@ -80,11 +80,15 @@ class ChessBoard:
 	blankName = "blankBoard"
 	fullName = "fullBoard"
 
-	def __init__(self, blankBoard, fullBoard, InitialVerticesCount, FinalVerticesCount = 150, Offset = 15):
+	# black threshold
+	blackThreshold = 0
+
+	def __init__(self, blankBoard, fullBoard, InitialVerticesCount, blackThreshold, FinalVerticesCount = 150, Offset = 15):
 		
 		self.INITIAL_VERTICES_COUNT = InitialVerticesCount
 		self.FINAL_VERTICES_COUNT = FinalVerticesCount
 		self.OFFSET = Offset
+		self.blackThreshold = blackThreshold
 
 		self.blankBoard = cv2.imread(blankBoard)
 		self.fullBoard = cv2.imread(fullBoard)
@@ -121,7 +125,7 @@ class ChessBoard:
 		self.plotAllEdges(testImg)
 		# plt.imshow(testImg),plt.show()
 		self.detectAllVertices(testImg)
-		# self.displayAllVertices(testImg)
+		self.displayAllVertices(testImg)
 		# print folderName
 		return self.populate(testImg, folderName)
 
@@ -290,7 +294,7 @@ class ChessBoard:
 				clrs.sort(reverse = True)
 
 				# print clrs
-				blank.append( (clrs[0][0] + clrs[1][0] + clrs[2][0] )  / 3 )
+				blank.append( (clrs[0][0]) )
 				# if sum(img.convert("L").getextrema()) in (0, 2):
 				# 	print str(i) + str(j)
 
@@ -305,10 +309,11 @@ class ChessBoard:
 				for ind in xrange(len(clrs)):
 					clrs[ind] = (clrs[ind][1], clrs[ind][0])
 				# print clrs
-				full.append( (clrs[0][0] + clrs[1][0] + clrs[2][0] )  / 3 )
+				full.append( (clrs[0][0] )  )
 
 		for i in xrange(len(full)):
-			thisOffset = 20
+			# print self.blackThreshold
+			thisOffset = int(self.blackThreshold)
 			# print full[i], " ", blank[i] 
 			# if (i / 8) <= 3:
 			# 	thisOffset = 10

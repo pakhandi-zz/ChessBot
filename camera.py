@@ -30,11 +30,11 @@ while(True):
 	cv2.imshow('frame',frame)
 
 	# for auto click
-	cv2.imwrite(filename,frame)
-	if not os.path.exists("img/"):
-		os.makedirs("img/")
-	shutil.move(filename,"img/"+filename)
-	break
+	# cv2.imwrite(filename,frame)
+	# if not os.path.exists("img/"):
+	# 	os.makedirs("img/")
+	# shutil.move(filename,"img/"+filename)
+	# break
 
 	#Save the frame and quit on 'q'
 	if cv2.waitKey(1) & 0xFF == ord('q'):
