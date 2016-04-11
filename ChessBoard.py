@@ -125,7 +125,7 @@ class ChessBoard:
 		self.plotAllEdges(testImg)
 		# plt.imshow(testImg),plt.show()
 		self.detectAllVertices(testImg)
-		self.displayAllVertices(testImg)
+		# self.displayAllVertices(testImg)
 		# print folderName
 		return self.populate(testImg, folderName)
 
@@ -292,8 +292,7 @@ class ChessBoard:
 				for ind in xrange(len(clrs)):
 					clrs[ind] = (clrs[ind][1], clrs[ind][0])
 				clrs.sort(reverse = True)
-
-				# print clrs
+				# print i, j, clrs[0][0], clrs
 				blank.append( (clrs[0][0]) )
 				# if sum(img.convert("L").getextrema()) in (0, 2):
 				# 	print str(i) + str(j)
@@ -305,11 +304,14 @@ class ChessBoard:
 				img = Image.open("fullBoard/" + str(i) + str(j) + ".jpg")
 				img = img.convert("L")
 				clrs = img.getcolors()
-				clrs.sort(reverse = True)
 				for ind in xrange(len(clrs)):
 					clrs[ind] = (clrs[ind][1], clrs[ind][0])
-				# print clrs
+				clrs.sort(reverse = True)
+				# print i, j, clrs[0][0], clrs
 				full.append( (clrs[0][0] )  )
+
+		matF = [[0 for i in xrange(self.FACTOR)] for i in xrange(self.FACTOR)]
+		matB = [[0 for i in xrange(self.FACTOR)] for i in xrange(self.FACTOR)]
 
 		for i in xrange(len(full)):
 			# print self.blackThreshold
@@ -321,13 +323,29 @@ class ChessBoard:
 			# 	thisOffset = 5
 			# else:
 			# 	thisOffset = 2
+			x = i / 8
+			y = i % 8
+			matF[x][y] = full[i]
+			matB[x][y] = blank[i]
 			if abs(full[i] - blank[i]) >= thisOffset:
-				x = i / 8
-				y = i % 8
 				self.TOPOLOGY[x][y] = 'W'
 
 				if(full[i] < blank[i]):
 					self.TOPOLOGY[x][y] = 'B'
+
+		# for i in xrange(self.FACTOR):
+		# 	for j in xrange(self.FACTOR):
+		# 		print("%5d" % (matB[i][j]) ) ,
+		# 	print ""
+
+		# print ""
+
+		# for i in xrange(self.FACTOR):
+		# 	for j in xrange(self.FACTOR):
+		# 		print("%5d" % (matF[i][j]) ) ,
+		# 	print ""
+
+		
 
 		return
 

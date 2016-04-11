@@ -9,15 +9,15 @@ import shutil
 
 
 # Checking arguments
-if len(sys.argv) != 2:
-	print "Correct Usage : python camera.py <DesiredFilename>"
+if len(sys.argv) != 3:
+	print "Correct Usage : python camera.py <DesiredFilename> <doStop>"
 	exit()
 
 # the name for the file to be saved
 filename = sys.argv[1] + ".jpg"
 
 # 1 => to use secondary (USB) web camera
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 while(True):
 	# Capture frame-by-frame
@@ -30,11 +30,12 @@ while(True):
 	cv2.imshow('frame',frame)
 
 	# for auto click
-	# cv2.imwrite(filename,frame)
-	# if not os.path.exists("img/"):
-	# 	os.makedirs("img/")
-	# shutil.move(filename,"img/"+filename)
-	# break
+	if sys.argv[2] == '0':
+		cv2.imwrite(filename,frame)
+		if not os.path.exists("img/"):
+			os.makedirs("img/")
+		shutil.move(filename,"img/"+filename)
+		break
 
 	#Save the frame and quit on 'q'
 	if cv2.waitKey(1) & 0xFF == ord('q'):
