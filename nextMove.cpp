@@ -173,6 +173,7 @@ int evaluate(vector<string> mat)
 	value['b'] = value['B'] = 13;
 	value['q'] = value['Q'] = 50;
 	value['k'] = value['K'] = 1000;
+	value['K'] *= 3;
 	value['p'] = value['P'] = 5;
 
 	int i, j;
