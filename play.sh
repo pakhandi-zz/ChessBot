@@ -15,8 +15,14 @@ while true; do
 	cat tempFile.txt > prevBoard.txt
 	cat prevBoard.txt
 	echo "======================="
-	./nextMove < prevBoard.txt
+	./nextMove < prevBoard.txt > out
 	cat prevBoard.txt
 	echo "======================="
+	while read line           
+	do            
+	    echo $line
+	    break         
+	done <out
+	python blue.py $line
 	i=$((i + 1))
 done
