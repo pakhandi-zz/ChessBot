@@ -534,11 +534,19 @@ int main()
 		}
 	}
 
+	string mv = "";
+
 	fl(i,0,2)
 	{
-		cout<<finalMove[i].first<<" "<<finalMove[i].second;
-		nline;
+		mv += finalMove[i].first + '0';
+		mv += finalMove[i].second + '0';
+		if(i == 0)
+			mv += "-";
+		//cout<<finalMove[i].first<<" "<<finalMove[i].second;
+		//nline;
 	}
+
+	cout<<mv; nline;
 
 	inBoard[finalMove[1].first][finalMove[1].second] = inBoard[finalMove[0].first][finalMove[0].second];
 	inBoard[finalMove[0].first][finalMove[0].second] = '.';
