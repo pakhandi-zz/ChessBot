@@ -291,7 +291,7 @@ class ChessBoard:
 				clrs = img.getcolors()
 				for ind in xrange(len(clrs)):
 					clrs[ind] = (clrs[ind][1], clrs[ind][0])
-				clrs.sort(reverse = True)
+				clrs.sort()
 				# print i, j, clrs[0][0], clrs
 				blank.append( (clrs[0][0]) )
 				# if sum(img.convert("L").getextrema()) in (0, 2):
@@ -306,7 +306,7 @@ class ChessBoard:
 				clrs = img.getcolors()
 				for ind in xrange(len(clrs)):
 					clrs[ind] = (clrs[ind][1], clrs[ind][0])
-				clrs.sort(reverse = True)
+				clrs.sort()
 				# print i, j, clrs[0][0], clrs
 				full.append( (clrs[0][0] )  )
 

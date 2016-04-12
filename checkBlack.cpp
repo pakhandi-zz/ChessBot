@@ -39,7 +39,7 @@ using namespace std;
 
 int LIMIT = 8;
 
-std::vector<pair<int,int> > cells;
+std::vector<string> cells;
 std::vector<string> playerMatrix;
 
 int main()
@@ -48,15 +48,14 @@ int main()
 
 	freopen("thisPlayerMatrix.txt", "r", stdin);
 
-	fl(i,0,6)
-	{
-		cells.PB(MP(i,0));
-		cells.PB(MP(i,LIMIT - 1));
-	}
-	cells.PB(MP(0,1));
-	cells.PB(MP(0,2));
-	cells.PB(MP(0,5));
-	cells.PB(MP(0,6));
+	cells.PB("B..BB..B");
+	cells.PB("........");
+	cells.PB("........");
+	cells.PB("B..BB..B");
+	cells.PB("B..BB..B");
+	cells.PB("........");
+	cells.PB("........");
+	cells.PB("B..BB..B");
 
 
 	string str1;
@@ -67,27 +66,17 @@ int main()
 		playerMatrix.PB(str1);
 	}
 
-	fl(i,0,cells.SZ())
-	{
-		if( playerMatrix[cells[i].first][cells[i].second] != 'B' )
-		{
-			return 1;
-		}
-	}
-
 	fl(i,0,LIMIT)
 	{
 		fl(j,0,LIMIT)
 		{
-			if( find(cells.begin(), cells.end(), MP(i,j)) == cells.end() )
-			{
-				if( playerMatrix[i][j] == 'B' )
-					return 1;
-			}
+			if(cells[i][j] == 'B' && playerMatrix[i][j] != 'B')
+				return 1;
+
+			else if(cells[i][j] != 'B' && playerMatrix[i][j] =='B')
+				return 1;
 		}
 	}
-
-	//cout<<"here";
 
 	return 0;
 }
