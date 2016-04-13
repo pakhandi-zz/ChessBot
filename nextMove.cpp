@@ -425,8 +425,8 @@ int main()
 		playerMatrix[i].resize(LIMIT);
 	}
 	finalMove.resize(2);
-	
-	
+
+	//freopen("prevBoard.txt", "r", stdin);
 
 	fl(i,0,LIMIT)
 	{
@@ -445,7 +445,7 @@ int main()
 		}
 	}
 
-	cin>>MYPLAYER;
+	//cin>>MYPLAYER;
 	
 	/*fl(i,0,LIMIT)
 	{
@@ -551,13 +551,14 @@ int main()
 	inBoard[finalMove[1].first][finalMove[1].second] = inBoard[finalMove[0].first][finalMove[0].second];
 	inBoard[finalMove[0].first][finalMove[0].second] = '.';
 
-	freopen("prevBoard.txt", "w", stdout);
+	freopen("tempFile.txt", "w", stdout);
 
 	fl(i,0,LIMIT)
 	{
 		fl(j,0,LIMIT)
 		{
-			cout<<inBoard[i][j];
+			printf("%c",inBoard[i][j]);
+			//cout<<inBoard[i];
 		}
 		nline;
 	}

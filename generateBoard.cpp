@@ -59,7 +59,7 @@ int main()
 		playerMatrix.PB(temp);
 	}
 
-	freopen("prevBoard.txt", "r", stdin);
+	//freopen("prevBoard.txt", "r", stdin);
 
 	fl(i,0,LIMIT)
 	{
