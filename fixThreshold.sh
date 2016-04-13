@@ -14,7 +14,7 @@ while true; do
 	echo $i
 	cat thisPlayerMatrix.txt
 	echo "=============================="
-	./checkBlack
+	./checkBlack < thisPlayerMatrix.txt
 	if [ $? -eq 0 ]
 	then
 		up=$i
@@ -23,20 +23,20 @@ while true; do
 	i=$((i - 1))
 done
 
-i=0
+# i=0
 
-while true; do
-	python test.py img/blankBoard.jpg img/fix.jpg 600 $i > thisPlayerMatrix.txt
-	echo $i
-	cat thisPlayerMatrix.txt
-	echo "=============================="
-	./checkBlack
-	if [ $? -eq 0 ]
-	then
-		down=$i
-		break
-	fi
-	i=$((i + 1))
-done
+# while true; do
+# 	python test.py img/blankBoard.jpg img/fix.jpg 600 $i > thisPlayerMatrix.txt
+# 	echo $i
+# 	cat thisPlayerMatrix.txt
+# 	echo "=============================="
+# 	./checkBlack
+# 	if [ $? -eq 0 ]
+# 	then
+# 		down=$i
+# 		break
+# 	fi
+# 	i=$((i + 1))
+# done
 
 echo $((up - 1)) > thresholdVal.txt

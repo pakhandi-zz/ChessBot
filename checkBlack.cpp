@@ -46,7 +46,7 @@ int main()
 {
 	int i, j;
 
-	freopen("thisPlayerMatrix.txt", "r", stdin);
+	//freopen("thisPlayerMatrix.txt", "r", stdin);
 
 	cells.PB("B..BB..B");
 	cells.PB("........");
