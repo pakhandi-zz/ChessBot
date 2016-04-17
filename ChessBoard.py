@@ -10,10 +10,6 @@
 		6> Predict the color of piece on each cell if not empty
 		7> Return the current player matrix
 
-	Gives correct output for X2, X3, X4, X6, X7
-	X1 : One cell error
-	X5 : corners not correct
-
 '''
 import numpy as np
 import cv2
@@ -125,7 +121,7 @@ class ChessBoard:
 		self.plotAllEdges(testImg)
 		# plt.imshow(testImg),plt.show()
 		self.detectAllVertices(testImg)
-		# self.displayAllVertices(testImg)
+		self.displayAllVertices(testImg)
 		# print folderName
 		return self.populate(testImg, folderName)
 
@@ -293,7 +289,7 @@ class ChessBoard:
 					clrs[ind] = (clrs[ind][1], clrs[ind][0])
 				clrs.sort()
 				# print i, j, clrs[0][0], clrs
-				blank.append( (clrs[0][0]) )
+				blank.append( (clrs[0][0] + clrs[1][0]) / 2 )
 				# if sum(img.convert("L").getextrema()) in (0, 2):
 				# 	print str(i) + str(j)
 
@@ -308,7 +304,7 @@ class ChessBoard:
 					clrs[ind] = (clrs[ind][1], clrs[ind][0])
 				clrs.sort()
 				# print i, j, clrs[0][0], clrs
-				full.append( (clrs[0][0] )  )
+				full.append( (clrs[0][0] + clrs[1][0]) / 2  )
 
 		matF = [[0 for i in xrange(self.FACTOR)] for i in xrange(self.FACTOR)]
 		matB = [[0 for i in xrange(self.FACTOR)] for i in xrange(self.FACTOR)]
@@ -408,7 +404,7 @@ class ChessBoard:
 				width = int(width / 2)
 				height = int(height / 2)
 
-				cropped = cropped[height-5:height+5, width-5:width+5]
+				cropped = cropped[height-7:height+7, width-7:width+7]
 				cropped = self.sharpen(cropped)
 				thisMatrix[x][y] = cropped
 
