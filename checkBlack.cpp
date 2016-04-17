@@ -1,5 +1,10 @@
-//Author : pakhandi
-//
+/*
+	Author : Asim Krishna Prasad
+
+	Aim :
+		1> Program to help fix black threshold using a pre defined board pattern
+
+*/
 using namespace std;
 
 #include<bits/stdc++.h>
