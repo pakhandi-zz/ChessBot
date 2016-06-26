@@ -5,8 +5,8 @@ garbage=1
 down=0
 up=50
 
-# python camera.py blankBoard 1
-# python camera.py fix 1
+python camera.py blankBoard 1
+python camera.py fix 1
 
 
 while true; do
