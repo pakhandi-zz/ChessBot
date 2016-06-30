@@ -1,3 +1,9 @@
+'''
+
+    Python script to send data using bluetooth
+
+'''
+
 import bluetooth
 import sys
 
