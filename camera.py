@@ -1,10 +1,10 @@
 '''
-	Program to get live stream from secondary web cam and click a picture on press of a button
-	This script performs following tasks:
-	1> The first argument is the filename for the capture
-		1.1> .jpg is appended at the end of the filename
-	2> The second argument decides if the script should wait for a key press or capture the shot as soon as the script is run
-	3> The images are saved in the TARGET_DIRECTORY directory
+    Program to get live stream from secondary web cam and click a picture on press of a button
+    This script performs following tasks:
+    1> The first argument is the filename for the capture
+        1.1> .jpg is appended at the end of the filename
+    2> The second argument decides if the script should wait for a key press or capture the shot as soon as the script is run
+    3> The images are saved in the TARGET_DIRECTORY directory
 '''
 
 import cv2
