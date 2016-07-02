@@ -7,7 +7,7 @@
 */
 using namespace std;
 
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 
 #define wl(n) while(n--)
 #define fl(i,a,b) for(i=a; i<b; i++)
@@ -51,8 +51,6 @@ int main()
 {
 	int i, j;
 
-	//freopen("thisPlayerMatrix.txt", "r", stdin);
-
 	cells.PB("B..BB..B");
 	cells.PB("........");
 	cells.PB("........");
@@ -61,7 +59,6 @@ int main()
 	cells.PB("........");
 	cells.PB("........");
 	cells.PB("B..BB..B");
-
 
 	string str1;
 
