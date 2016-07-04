@@ -1,5 +1,10 @@
 #! /usr/bin/bash
 
+'''
+    Script to drive the checkBlack and fix a threshold
+
+'''
+
 i=60
 garbage=1
 down=0
