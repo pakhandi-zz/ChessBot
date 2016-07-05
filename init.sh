@@ -12,7 +12,7 @@
 
 sh fixThreshold.sh
 
-cat initBoard.txt > prevBoard.txt
+cat resources/initBoard.txt > prevBoard.txt
 prev=""
 while read line           
 do            
