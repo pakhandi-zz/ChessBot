@@ -1,8 +1,8 @@
 '''
-	Author : Asim Krishna Prasad
+    Author : Asim Krishna Prasad
 
-	Aim :
-		1> Basic geometry functions to assist ChessBoard.py
+    Aim :
+        1> Basic geometry functions to assist ChessBoard.py
 '''
 
 from math import *
@@ -15,7 +15,7 @@ def getPointsDistance((x1, y1), (x2, y2)):
 
 # Function to getgit  mid-point of a line segment
 def getMidPoint((x1, y1), (x2, y2)):
-    return (int((x1 + x2) / 2), int((y1 + y2) / 2))
+    return int((x1 + x2) / 2), int((y1 + y2) / 2)
 
 
 # Function to get "Segments" equal segments on a line-segment
