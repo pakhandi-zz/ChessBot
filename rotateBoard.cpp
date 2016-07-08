@@ -67,7 +67,6 @@ int main()
 		{
 			temp += playerMatrix[j][i];
 		}
-		//cout<<temp; nline;
 		rotatedBoard.PB(temp);
 	}
 

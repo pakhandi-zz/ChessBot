@@ -7,11 +7,12 @@
     3> The images are saved in the TARGET_DIRECTORY directory
 '''
 
-import cv2
-import sys
 import os
+import sys
+import cv2
 import shutil
 
+# Directory where the image will be stored
 TARGET_DIRECTORY = "img/"
 
 # Checking arguments
