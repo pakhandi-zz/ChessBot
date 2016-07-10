@@ -11,17 +11,24 @@ import os
 import sys
 import cv2
 import shutil
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("filename", help="The name of the image file")
+parser.add_argument("doStop", help="Wait for key press to stop?1:0")
+args = parser.parse_args()
+
+# Checking arguments
+# if len(sys.argv) != 3:
+#     print "Correct Usage : python camera.py <DesiredFilename> <doStop>"
+#     exit()
 
 # Directory where the image will be stored
 TARGET_DIRECTORY = "img/"
 
-# Checking arguments
-if len(sys.argv) != 3:
-    print "Correct Usage : python camera.py <DesiredFilename> <doStop>"
-    exit()
 
 # the name for the file to be saved
-filename = sys.argv[1] + ".jpg"
+filename = args.filename + ".jpg"
 
 # 1 => to use secondary (USB) web camera
 cap = cv2.VideoCapture(1)
@@ -34,7 +41,7 @@ while (True):
     cv2.imshow('frame', frame)
 
     # for auto click
-    if sys.argv[2] == '0':
+    if args.doStop == '0':
         cv2.imwrite(filename, frame)
         if not os.path.exists(TARGET_DIRECTORY):
             os.makedirs(TARGET_DIRECTORY)
