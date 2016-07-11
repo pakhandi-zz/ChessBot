@@ -12,6 +12,7 @@ import cv2
 import shutil
 import argparse
 
+# Handle the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", help="The name of the image file")
 parser.add_argument("doStop", help="Wait for key press to stop?1:0")
