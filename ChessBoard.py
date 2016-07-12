@@ -12,15 +12,16 @@
 
 '''
 
-import numpy as np
 import cv2
-from matplotlib import pyplot as plt
-from math import *
 import shutil
 import Geometry
-from copy import deepcopy
+from math import *
+import numpy as np
 from PIL import Image
+from copy import deepcopy
+from matplotlib import pyplot as plt
 
+# class to contain all the basic functionalities
 class ChessBoard:
     # Colors
     RED = (255, 0, 0)
@@ -89,10 +90,14 @@ class ChessBoard:
         self.blankBoard = cv2.imread(blankBoard)
         self.fullBoard = cv2.imread(fullBoard)
 
+        # get the edges from the images
         self.blankBoardEdges = cv2.Canny(self.blankBoard, 0, 100)
         self.fullBoardEdges = cv2.Canny(self.fullBoard, 0, 100)
 
+        # try to identify the four corners in the blankBoard
         self.detectFourCorners(self.blankBoardEdges)
+
+        # process both the images
         self.blankBoardMatrix = self.process(self.blankBoard, self.blankBoardEdges, self.blankName)
         self.fullBoardMatrix = self.process(self.fullBoard, self.fullBoardEdges, self.fullName)
 
@@ -197,7 +202,7 @@ class ChessBoard:
                 if point[0] < bottom_left_x:
                     # print point
                     bottom_left_x, bottom_left_y = point[0], point[1]
-                # print bottom_left_x," ",bottom_left_y
+                    # print bottom_left_x," ",bottom_left_y
 
         # print "*"*20
 
@@ -293,8 +298,8 @@ class ChessBoard:
                 clrs.sort()
                 # print i, j, clrs[0][0], clrs
                 blank.append((clrs[0][0] + clrs[1][0]) / 2)
-            # if sum(img.convert("L").getextrema()) in (0, 2):
-            # 	print str(i) + str(j)
+                # if sum(img.convert("L").getextrema()) in (0, 2):
+                # 	print str(i) + str(j)
 
         # print "$" * 30
 
