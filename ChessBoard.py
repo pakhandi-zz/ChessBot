@@ -80,6 +80,7 @@ class ChessBoard:
     # black threshold
     blackThreshold = 0
 
+    # initializing the values using this constructor
     def __init__(self, blankBoard, fullBoard, InitialVerticesCount, blackThreshold, FinalVerticesCount=150, Offset=15):
 
         self.INITIAL_VERTICES_COUNT = InitialVerticesCount
@@ -101,6 +102,7 @@ class ChessBoard:
         self.blankBoardMatrix = self.process(self.blankBoard, self.blankBoardEdges, self.blankName)
         self.fullBoardMatrix = self.process(self.fullBoard, self.fullBoardEdges, self.fullName)
 
+    # fucntion to sharpen the image
     def sharpen(self, testImg):
         # Create the identity filter, but with the 1 shifted to the right!
         kernel = np.zeros((9, 9), np.float32)
@@ -116,6 +118,7 @@ class ChessBoard:
 
         return testImg
 
+    # driver function to process a single image
     def process(self, testImg, testImgEdges, folderName):
         # self.detectFourCorners(testImgEdges)
         self.plotFourCorners(testImg)
@@ -130,6 +133,7 @@ class ChessBoard:
         # print folderName
         return self.populate(testImg, folderName)
 
+    # function to detect four corners of the board
     def detectFourCorners(self, testImgEdges):
 
         self.CORNERS = []
