@@ -191,7 +191,7 @@ class ChessBoard:
         # print "*"*20
 
         for point in vertices:
-            if (point[1] >= minny - self.OFFSET and point[1] <= minny + self.OFFSET):
+            if minny - self.OFFSET <= point[1] <= minny + self.OFFSET:
                 # print point
                 if point[0] > top_right_x:
                     # to avoid any other vertex on edge to be detected as the corner
@@ -199,7 +199,7 @@ class ChessBoard:
                         top_right_x, top_right_y = point[0], point[1]
                 if point[0] < top_left_x:
                     top_left_x, top_left_y = point[0], point[1]
-            if (point[1] >= maxxy - self.OFFSET and point[1] <= maxxy + self.OFFSET):
+            if maxxy - self.OFFSET <= point[1] <= maxxy + self.OFFSET:
                 # print point
                 if point[0] > bottom_right_x:
                     bottom_right_x, bottom_right_y = point[0], point[1]
@@ -215,11 +215,13 @@ class ChessBoard:
         self.CORNERS.append((top_right_x, top_right_y))
         self.CORNERS.append((bottom_right_x, bottom_right_y))
 
+    # function to plot corner points on image
     def plotFourCorners(self, testImg):
         tempImg = testImg
         for point in self.CORNERS:
             cv2.circle(tempImg, point, 3, self.RED, -1)
 
+    # function to plot border edges on the image
     def plotOuterEdges(self, testImg):
         tempImg = testImg
         for i in range(0, 4):
