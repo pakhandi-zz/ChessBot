@@ -21,6 +21,7 @@ from PIL import Image
 from copy import deepcopy
 from matplotlib import pyplot as plt
 
+
 # class to contain all the basic functionalities
 class ChessBoard:
     # Colors
@@ -354,9 +355,6 @@ class ChessBoard:
         # 	for j in xrange(self.FACTOR):
         # 		print("%5d" % (matF[i][j]) ) ,
         # 	print ""
-
-
-
         return
 
     def getFourCorners(self):
@@ -402,6 +400,7 @@ class ChessBoard:
             # print self.TOPOLOGY[i][j],""
             print ""
 
+    # Get the centeral part of each cell of the board and save it in a directory
     def populate(self, testImg, folderName):
         thisMatrix = [[[[(0) for x in range(10)] for x in range(10)] for x in range(self.FACTOR)] for x in
                       range(self.FACTOR)]
