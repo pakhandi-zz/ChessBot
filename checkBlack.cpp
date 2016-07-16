@@ -47,23 +47,42 @@ int LIMIT = 8;
 std::vector<string> cells;
 std::vector<string> playerMatrix;
 
+// The value to be returned by the program
+int retVal = 0;
+
+/*
+    Function to get the matrix which will be used to get the threshold
+    This function can be modified to use a file
+    For now the matrix is hard-coded here
+*/
+vector<string> getThresholdMatrix()
+{
+    vector<string> thisCells;
+    /*
+        The arrangement of the board to decide the threshold
+        This can be kept in a file
+    */
+	thisCells.PB("B..BB..B");
+	thisCells.PB("........");
+	thisCells.PB("........");
+	thisCells.PB("B..BB..B");
+	thisCells.PB("B..BB..B");
+	thisCells.PB("........");
+	thisCells.PB("........");
+	thisCells.PB("B..BB..B");
+
+	return thisCells;
+}
+
 int main()
 {
 	int i, j;
 
-	cells.PB("B..BB..B");
-	cells.PB("........");
-	cells.PB("........");
-	cells.PB("B..BB..B");
-	cells.PB("B..BB..B");
-	cells.PB("........");
-	cells.PB("........");
-	cells.PB("B..BB..B");
-
-	string str1;
+	cells = getThresholdMatrix();
 
 	fl(i,0,LIMIT)
 	{
+	    string str1;
 		cin>>str1;
 		playerMatrix.PB(str1);
 	}
@@ -73,14 +92,14 @@ int main()
 		fl(j,0,LIMIT)
 		{
 			if(cells[i][j] == 'B' && playerMatrix[i][j] != 'B')
-				return 1;
+				retVal = 1;
 
 			else if(cells[i][j] != 'B' && playerMatrix[i][j] =='B')
-				return 1;
+				retVal = 1;
 		}
 	}
 
-	return 0;
+	return retVal;
 }
 /*
 	Powered by Buggy Plugin
